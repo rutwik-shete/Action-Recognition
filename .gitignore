@@ -1,4 +1,7 @@
-KTH/
+KTH
+KTH_pickle.zip
 .DS_Store
 HMDB_simp
-TrialDatabase
+dataset
+__pycache__
+KTH_pickle
