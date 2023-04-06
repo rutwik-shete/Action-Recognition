@@ -24,7 +24,7 @@
                 "--train_batch_size","20",
                 "--val_batch_size","20",
                 "--test_batch_size","20",
-                "--epochs","2"
+                "--epoch","2"
             ]
         }
     ]

@@ -14,5 +14,3 @@ def CustomModel():
     model.classifier = nn.Linear(768,len(CATEGORY_INDEX),bias=True)
 
     return model,processor
-
-CustomModel()

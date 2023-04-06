@@ -26,6 +26,7 @@ def argument_parser():
     )
 
     parser.add_argument(
-        "--epoch", type=int, default="10", help="epoch for training"
+        "--epochs", type=int, default="10", help="epoch for training"
     )
+
     return parser
