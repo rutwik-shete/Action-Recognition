@@ -4,10 +4,10 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [{
-            "name": "Trial.py",
+            "name": "test",
             "type": "python",
             "request": "launch",
-            "program": "trial.py",
+            "program": "model.py",
             "console": "integratedTerminal",
             "justMyCode": true
         },
@@ -19,7 +19,12 @@
             "console": "integratedTerminal",
             "justMyCode": true,
             "args": [
-                "--dataset_path", "./dataset"
+                "--dataset_path", "./dataset",
+                "--block_size","8",
+                "--train_batch_size","20",
+                "--val_batch_size","20",
+                "--test_batch_size","20",
+                "--epoch","2"
             ]
         }
     ]
