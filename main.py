@@ -58,6 +58,7 @@ def main():
     # Procuring the pretrained model
 
     model,processor = CustomModel()
+    model.to(device)
 
     learning_rate = 0.001
     optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=1e-8)
@@ -66,12 +67,12 @@ def main():
         train(model,processor,train_loader,val_loader,optimizer,device)
     
     test(model,test_loader,device)
+    # test(model,val_loader,device,is_test=False)
 
 
 def train(model, processor, data_loader, val_loader, optimizer, device):
     loss_meter = AverageMeter()
     model.train()
-    model.to(device)
     tk = tqdm(data_loader, total=int(len(data_loader)), desc='Training', unit='frames', leave=False)
     for batch_idx, data in enumerate(tk):
         frame, label = data[0], data[1]
@@ -96,7 +97,10 @@ def test(model, data_loader, device, is_test=True):
     acc_meter = AverageMeter()
     correct = 0
     model.eval()
-    tk = tqdm(data_loader, total=int(len(data_loader)), desc='Test', unit='frames', leave=False)
+    if is_test:
+        tk = tqdm(data_loader, total=int(len(data_loader)), desc='Test', unit='frames', leave=False)
+    else:
+        tk = tqdm(data_loader, total=int(len(data_loader)), desc='Validation', unit='frames', leave=False)
     for batch_idx, data in enumerate(tk):
         frame, label = data[0], data[1]
         frame = torch.squeeze(frame)
