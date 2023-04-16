@@ -1,1 +1,13 @@
 Completed the dataset extractor . create data loader now
+
+libraries to install:
+    pip install pandas
+    pip install fast_ml
+    pip install scipy
+    pip install matplotlib
+    pip install seaborn
+    pip install ipython
+    pip install tqdm
+    pip install scikit-learn
+    pip install transformers
+    pip install IProgress

@@ -31,20 +31,46 @@ class BlockFrameDataset(Dataset):
         self.instances, self.labels = self.read_dataset(directory,video_ids_to_include,block_size)
 
         # convert them into tensor
-        self.instances = torch.from_numpy(self.instances)
+        # self.instances = torch.from_numpy(self.instances)
         self.labels = torch.from_numpy(self.labels)
-        
+        self.block_size = block_size
+        self.transform = T.Compose(
+            [
+                T.Resize((224, 224)),
+                T.ToTensor(),
+            ]
+        )
+
         # normalize
-        self.zero_center()
+        # self.zero_center()
 
     def __len__(self):
-        return self.instances.shape[0]
+        return len(self.instances)
 
     def __getitem__(self, idx):
-        return self.instances[idx], self.labels[idx]
+
+        frame_set_path = self.instances[idx]
+        frame_list = os.listdir(frame_set_path)
+
+        current_block = []
+
+        for frame_path in frame_list:
+            frame_set_id_path = osp.join(frame_set_path,frame_path)
+            frame = read_image(frame_set_id_path,self.transform)
+            current_block.append(frame.numpy())
+        
+        current_block = np.array(current_block)
+
+        output_frame = current_block.reshape((1, self.block_size, 3, 224, 224))
+
+        output_frame = np.array(output_frame, dtype=np.float32)
+
+        output_frame = torch.from_numpy(output_frame)
+
+        return output_frame, self.labels[idx]
 
     def zero_center(self):
-        self.instances -= float(self.mean)
+        # self.instances -= float(self.mean)
         pass
 
     def read_dataset(self, directory, video_ids_to_include, block_size, mean=None):
@@ -80,26 +106,29 @@ class BlockFrameDataset(Dataset):
 
                 if video_id in video_ids_to_include:
 
-                    frame_ids = os.listdir(osp.join(directory,action_name,video_id))
-                    if ds_store in frame_ids: frame_ids.remove(ds_store)
+                    frame_set_ids = os.listdir(osp.join(directory,action_name,video_id))
+                    if ds_store in frame_set_ids: frame_set_ids.remove(ds_store)
 
-                    for video_frame_id in frame_ids:
-                        frame_path = osp.join(directory,action_name,video_id,video_frame_id)
-                        frame = read_image(frame_path,transform)
-                        current_block.append(frame.numpy())
+                    for video_frame_set_id in frame_set_ids:
+                        frame_set_id_path = osp.join(directory,action_name,video_id,video_frame_set_id)
 
-                        # 8 consecutive frames
-                        if len(current_block) % block_size == 0:
-                            current_block = np.array(current_block)
+                        instances.append(frame_set_id_path)
+                        labels.append(CATEGORY_INDEX[action_name])
+                        # frame = read_image(frame_path,transform)
+                        # current_block.append(frame.numpy())
 
-                            instances.append(current_block.reshape((1, block_size, 3, 224, 224)))
-                            labels.append(CATEGORY_INDEX[action_name])
+                        # # 8 consecutive frames
+                        # if len(current_block) % block_size == 0:
+                        #     current_block = np.array(current_block)
 
-                            current_block = []
+                        #     instances.append(current_block.reshape((1, block_size, 3, 224, 224)))
+                        #     labels.append(CATEGORY_INDEX[action_name])
 
-        instances = np.array(instances, dtype=np.float32)
+                        #     current_block = []
+
+        # instances = np.array(instances)
         labels = np.array(labels, dtype=np.uint8)
 
-        self.mean = np.mean(instances)
+        # self.mean = np.mean(instances)
                 
         return instances,labels
