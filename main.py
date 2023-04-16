@@ -64,17 +64,26 @@ def main():
     optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=1e-8)
 
     for epoch in range(args.epochs):
-        train(model,processor,train_loader,val_loader,optimizer,device)
+        print("Starting Epoch",str(epoch+1),"......")
+        avg_train_loss = train(model,processor,train_loader,val_loader,optimizer,device)
+        print("Training Epoch",str(epoch+1),"Average Loss :",avg_train_loss)
+
+        if(epoch+1) % 5 == 0:
+            print("\nValidation Started ....................")
+            test(model,val_loader,device,is_test=False)
+            print("Validation Ended ....................\n")
     
+    print("\nTest Started ....................")
     test(model,test_loader,device)
+    print("Test Ended ....................\n")
     # test(model,val_loader,device,is_test=False)
 
 
 def train(model, processor, data_loader, val_loader, optimizer, device):
     loss_meter = AverageMeter()
     model.train()
-    tk = tqdm(data_loader, total=int(len(data_loader)), desc='Training', unit='frames', leave=False)
-    for batch_idx, data in enumerate(tk):
+    # tk = tqdm(data_loader, total=int(len(data_loader)), desc='Training', unit='frames', leave=False)
+    for batch_idx, data in enumerate(data_loader):
         frame, label = data[0], data[1]
         frame = torch.squeeze(frame)
         label = label
@@ -87,9 +96,10 @@ def train(model, processor, data_loader, val_loader, optimizer, device):
         loss_this.backward()
         optimizer.step()
         loss_meter.update(loss_this.item(), label.shape[0])
-        tk.set_postfix({"loss": loss_meter.avg})
-    print('Train: Average loss: {:.4f}\n'.format(loss_meter.avg))
-    test(model,val_loader,device,is_test=False)
+        # tk.set_postfix({"loss": loss_meter.avg})
+    # print('Train: Average loss: {:.4f}\n'.format(loss_meter.avg))
+    return loss_meter.avg
+    # test(model,val_loader,device,is_test=False)
 
 
 def test(model, data_loader, device, is_test=True):
@@ -97,11 +107,11 @@ def test(model, data_loader, device, is_test=True):
     acc_meter = AverageMeter()
     correct = 0
     model.eval()
-    if is_test:
-        tk = tqdm(data_loader, total=int(len(data_loader)), desc='Test', unit='frames', leave=False)
-    else:
-        tk = tqdm(data_loader, total=int(len(data_loader)), desc='Validation', unit='frames', leave=False)
-    for batch_idx, data in enumerate(tk):
+    # if is_test:
+    #     tk = tqdm(data_loader, total=int(len(data_loader)), desc='Test', unit='frames', leave=False)
+    # else:
+    #     tk = tqdm(data_loader, total=int(len(data_loader)), desc='Validation', unit='frames', leave=False)
+    for batch_idx, data in enumerate(data_loader):
         frame, label = data[0], data[1]
         frame = torch.squeeze(frame)
         frame, label = frame.to(device), label.to(device)
