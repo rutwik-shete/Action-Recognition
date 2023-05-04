@@ -3,7 +3,7 @@ from torch import nn
 
 from Constants import CATEGORY_INDEX
 
-def CustomModel():
+def CustomModel(isInputLearnable = False):
 
     processor = AutoImageProcessor.from_pretrained("facebook/timesformer-base-finetuned-k400")
     model = TimesformerForVideoClassification.from_pretrained("facebook/timesformer-base-finetuned-k400")
@@ -11,6 +11,13 @@ def CustomModel():
     for params in model.parameters():
         params.requires_grad = False
 
+    # if isInputLearnable :
+    #     model.in
+
     model.classifier = nn.Linear(768,len(CATEGORY_INDEX),bias=True)
 
+    # print(model)
+
     return model,processor
+
+# CustomModel()

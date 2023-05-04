@@ -11,3 +11,12 @@ libraries to install:
     pip install scikit-learn
     pip install transformers
     pip install IProgress
+
+How big TimeSFormer is
+
+Shiftting the number of frams and size of the image
+
+is it(TimeSFormer) trained with labels or without labels ?
+
+Create Check points
+Code crashed due to Batch side of the Validation set maybe
