@@ -1,8 +1,8 @@
 #!/bin/sh
 
-TimeSformerType=400
+TimeSformerType=600
 block_size=16
-epochs=1
+epochs=10
 train_batch=20
 val_batch=20
 save_log_name=TimeSFormer_${TimeSformerType}_${block_size}_${epochs}_${train_batch}_${val_batch}
