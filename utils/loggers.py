@@ -73,4 +73,4 @@ class RankLogger:
             for epoch, acc in zip(
                 self.logger[name]["epoch"], self.logger[name]["Acc"]
             ):
-                print(f"- epoch {epoch}\t rank1 {acc:.1%}")
+                print(f"- epoch {epoch}\t Accuracy {acc:.2f}%")

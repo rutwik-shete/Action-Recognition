@@ -81,7 +81,6 @@ def main():
         startEpochs = resume_from_checkpoint(
             args.resume, model, optimizer=optimizer
         )
-        print("Resuming From Epoch : ",str(startEpochs))
     else:
         startEpochs = args.epochs
 
@@ -109,11 +108,11 @@ def main():
             )
 
             print("\nValidation Started ....................")
-            test(model,val_loader,device,is_test=False)
+            acc_avg = test(model,val_loader,device,is_test=False)
             print("Validation Ended ....................\n")
             
             for name in args.target_names:
-                ranklogger.write(name, epoch + 1, avg_train_loss)
+                ranklogger.write(name, epoch + 1, acc_avg)
 
 
             

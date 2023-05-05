@@ -2,15 +2,15 @@
 
 TimeSformerType=400
 block_size=16
-epochs=5
+epochs=1
 train_batch=20
 val_batch=20
-save_log_name=TimeSFormer_$TimeSformerType_$block_size_$epochs_$train_batch_$val_batch
+save_log_name=TimeSFormer_${TimeSformerType}_${block_size}_${epochs}_${train_batch}_${val_batch}
 
 main_file_path=/Users/rutwikshete/Desktop/Codeing/Surrey/SurreyAssignment/Action-Recognition/main.py
 home_path=/Users/rutwikshete/Desktop/Codeing/Surrey/SurreyAssignment/Datasets/
 dataset_path=/Users/rutwikshete/Desktop/Codeing/Surrey/SurreyAssignment/Datasets/HMDB_simp
-ckp=/Users/rutwikshete/Desktop/Codeing/Surrey/SurreyAssignment/Action-Recognition/Logs
+ckp=/Users/rutwikshete/Desktop/Codeing/Surrey/SurreyAssignment/Action-Recognition/Logs/$save_log_name
 
 python3 $main_file_path \
 --home_path $home_path \
