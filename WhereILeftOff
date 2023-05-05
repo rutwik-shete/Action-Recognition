@@ -1,16 +1,16 @@
 Completed the dataset extractor . create data loader now
 
 libraries to install:
-    pip install pandas
-    pip install fast_ml
-    pip install scipy
-    pip install matplotlib
-    pip install seaborn
-    pip install ipython
-    pip install tqdm
-    pip install scikit-learn
-    pip install transformers
-    pip install IProgress
+    pip3 install pandas
+    pip3 install fast_ml
+    pip3 install scipy
+    pip3 install matplotlib
+    pip3 install seaborn
+    pip3 install ipython
+    pip3 install tqdm
+    pip3 install scikit-learn
+    pip3 install transformers
+    pip3 install IProgress
 
 How big TimeSFormer is
 

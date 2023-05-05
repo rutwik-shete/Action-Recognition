@@ -131,8 +131,6 @@ def main():
 def train(model, processor, data_loader, val_loader, optimizer, device, epoch):
     loss_meter = AverageMeter()
     model.train()
-    
-    print("You are inside the training loop : ",str(len(data_loader)))
 
     for batch_idx, data in enumerate(data_loader):
         frame, label = data[0], data[1]
@@ -176,7 +174,7 @@ def test(model, data_loader, device, is_test=True):
         acc_meter.update(acc_this, label.shape[0])
         loss_meter.update(loss_this.item(), label.shape[0])
 
-        print("{:s} Batch [{:02d}/{:02d}] --> Batch Accuracy : {:f}".format("Test" if is_test else "Validation",batch_idx+1,len(data_loader),acc_this))
+        print("{:s} Batch [{:02d}/{:02d}] --> Batch Accuracy : {:.2f}%".format("Test" if is_test else "Validation",batch_idx+1,len(data_loader),acc_this))
 
     if is_test:
         print('Test: Average loss: {:.4f}, Accuracy: {}/{} ({:.2f}%)\n'.format(
