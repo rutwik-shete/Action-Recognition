@@ -8,6 +8,8 @@ from torchvision.models.video import r3d_18
 
 from Constants import CATEGORY_INDEX
 
+from .models.Resnet18_2D import Resnet18_2D_With_Attention
+
 def timeSformer400():
 
     processor = AutoImageProcessor.from_pretrained("facebook/timesformer-base-finetuned-k400")
