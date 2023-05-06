@@ -20,3 +20,4 @@ is it(TimeSFormer) trained with labels or without labels ?
 
 Create Check points
 Code crashed due to Batch side of the Validation set maybe
+Why does different frame sizes work with the TimeSFormer 
