@@ -2,20 +2,20 @@
 from args import argument_parser
 from data_manager import BlockFrameDataset
 from data_split import split_data
-from model import CustomModel
 from AverageMeter import AverageMeter
 from utils.createDataset import createDataset
 from utils.loggers import (Logger,RankLogger)
 from utils.torchtools import (save_checkpoint,resume_from_checkpoint)
 import time
-import datetime
+from datetime import datetime
+import progressbar
 
-from tqdm.notebook import tqdm
 
 import numpy as np
 import os.path as osp
 
 import sys
+from sys import platform
 
 import warnings
 
@@ -23,6 +23,10 @@ import torch
 from torch.utils.data import DataLoader
 from torch import optim
 import torch.nn.functional as F
+from torchinfo import summary
+
+from model import getModel
+
 
 # global variables
 parser = argument_parser()
@@ -34,11 +38,15 @@ args = parser.parse_args()
 
 def main():
 
-    log_name = "log_train.txt"
-    sys.stdout = Logger(osp.join(args.save_dir, log_name))
     # Code For GPU Selection
-    has_cuda = True if torch.has_cuda else False
-    has_mps = True if torch.has_mps else False
+
+    has_mps = None
+    has_cuda = None
+
+    if platform == "darwin": #MAC, check mps
+        has_mps = True if torch.has_mps else False
+    else: # linux or windows, check cuda
+        has_cuda = True if torch.has_cuda else False
 
     device = torch.device('cpu')
     if has_cuda :
@@ -71,10 +79,13 @@ def main():
 
     # Procuring the pretrained model
 
-    model,processor = CustomModel()
+    model,processor = getModel(args)
+    
+    summary(model, input_size=(args.train_batch_size, 8, 3, 224, 224))
+    
     model.to(device)
 
-    learning_rate = 0.001
+    learning_rate = args.lr
     optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=1e-8)
 
     if args.resume and osp.isdir(args.resume):
@@ -84,15 +95,12 @@ def main():
     else:
         startEpochs = args.epochs
 
-    time_start = time.time()
     ranklogger = RankLogger(args.source_names, args.target_names)
 
     for epoch in range(startEpochs,args.epochs):
-        print("Starting Epoch",str(epoch+1),"......")
+        print("\nStarting Epoch",str(epoch+1),"......")
         avg_train_loss = train(model,processor,train_loader,val_loader,optimizer,device,epoch+1)
-        print("Training Epoch",str(epoch+1),"Average Loss :",avg_train_loss)
-
-        
+        print("\nTraining Epoch",str(epoch+1),"Average Loss :",avg_train_loss)
 
         if(epoch+1) % args.eval_freq == 0:
             print("Saving Checkpoint .......")
@@ -113,17 +121,11 @@ def main():
             
             for name in args.target_names:
                 ranklogger.write(name, epoch + 1, acc_avg)
-
-
-            
     
     print("\nTest Started ....................")
     test(model,test_loader,device)
     print("Test Ended ....................\n")
 
-    elapsed = round(time.time() - time_start)
-    elapsed = str(datetime.timedelta(seconds=elapsed))
-    print(f"Elapsed {elapsed}")
     ranklogger.show_summary()
 
 
@@ -131,13 +133,18 @@ def train(model, processor, data_loader, val_loader, optimizer, device, epoch):
     loss_meter = AverageMeter()
     model.train()
 
+    bar = progressbar.ProgressBar(maxval=len(data_loader)).start()
     for batch_idx, data in enumerate(data_loader):
+        bar.update(batch_idx+1)
         frame, label = data[0], data[1]
         frame = torch.squeeze(frame)
-        label = label
         frame, label = frame.to(device), label.to(device)
         output = model(frame)
-        logits = output.logits
+
+        if(args.model == "timesformer400"):
+            logits = output.logits
+        elif(args.model == "resnet18WithAttention"):
+            logits = output
 
         loss_this = F.cross_entropy(logits, label)
         optimizer.zero_grad()
@@ -145,7 +152,7 @@ def train(model, processor, data_loader, val_loader, optimizer, device, epoch):
         optimizer.step()
         loss_meter.update(loss_this.item(), label.shape[0])
         
-        print("Epoch {:02d} Batch [{:02d}/{:02d}] --> Avg Loss : {:f}".format(epoch,batch_idx+1,len(data_loader),loss_meter.avg))
+        # print("Epoch {:02d} Batch [{:02d}/{:02d}] --> Avg Loss : {:f}".format(epoch,batch_idx+1,len(data_loader),loss_meter.avg))
     
     return loss_meter.avg
     
@@ -156,13 +163,19 @@ def test(model, data_loader, device, is_test=True):
     acc_meter = AverageMeter()
     correct = 0
     model.eval()
+    bar = progressbar.ProgressBar(maxval=len(data_loader)).start()
     for batch_idx, data in enumerate(data_loader):
+        bar.update(batch_idx+1)
         frame, label = data[0], data[1]
         frame = torch.squeeze(frame)
         frame, label = frame.to(device), label.to(device)
         with torch.no_grad():
             output = model(frame)
-        logits = output.logits
+        
+        if(args.model == "timesformer400"):
+            logits = output.logits
+        elif(args.model == "resnet18WithAttention"):
+            logits = output
 
         loss_this = F.cross_entropy(logits, label)
         pred = logits.argmax(dim=1, keepdim=True)
@@ -173,17 +186,26 @@ def test(model, data_loader, device, is_test=True):
         acc_meter.update(acc_this, label.shape[0])
         loss_meter.update(loss_this.item(), label.shape[0])
 
-        print("{:s} Batch [{:02d}/{:02d}] --> Batch Accuracy : {:.2f}%".format("Test" if is_test else "Validation",batch_idx+1,len(data_loader),acc_this))
+        # print("{:s} Batch [{:02d}/{:02d}] --> Batch Accuracy : {:.2f}%".format("Test" if is_test else "Validation",batch_idx+1,len(data_loader),acc_this))
 
     if is_test:
-        print('Test: Average loss: {:.4f}, Accuracy: {}/{} ({:.2f}%)\n'.format(
+        print('\nTest: Average loss: {:.4f}, Accuracy: {}/{} ({:.2f}%)\n'.format(
         loss_meter.avg, correct, len(data_loader.dataset), acc_meter.avg))
     
     else:
-        print('Validation: Average loss: {:.4f}, Accuracy: {}/{} ({:.2f}%)\n'.format(
+        print('\nValidation: Average loss: {:.4f}, Accuracy: {}/{} ({:.2f}%)\n'.format(
         loss_meter.avg, correct, len(data_loader.dataset), acc_meter.avg))
 
     return acc_meter.avg
 
 if __name__ == "__main__":
+    start_time = datetime.now()
+
+    log_name = "log_train.txt"
+    sys.stdout = Logger(osp.join(args.save_dir, log_name))
+
+    print("Running with command line: ", args)
     main()
+
+    end_time = datetime.now()
+    print('Runtime : {}'.format(end_time - start_time))

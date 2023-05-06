@@ -46,6 +46,14 @@ def argument_parser():
     )
 
     parser.add_argument(
+        "--lr", type=float, default=0.001, help="learning rate for model"
+    )
+
+    parser.add_argument(
+        "--model", type=str, default="timesformer400", help="model to pick for train/test"
+    )
+
+    parser.add_argument(
         "-t",
         "--target-names",
         type=str,
@@ -62,5 +70,17 @@ def argument_parser():
         nargs="+",
         help="source dataset for training(delimited by space)",
     )
+
+    parser.add_argument(
+        "--attn_dim", type=int, default=40, help="attention dimension"
+    )  
+         
+    parser.add_argument(
+        "--dropout", type=float, default=0.3, help="dropout rate"
+    ) 
+
+    parser.add_argument(
+        '--skip_attention', action='store_true', default=False
+        )
 
     return parser
