@@ -189,10 +189,11 @@ def test(model, data_loader, device, is_test=True):
     all_preds = np.empty((0))
     all_labels = np.empty((0))
     
-    all_labels_pr = torch.empty((0,))
-    all_preds_pr = torch.empty((0,))
+    all_labels_pr = np.empty((0))
+    all_preds_pr = np.empty((0,25))
 
     for batch_idx, data in enumerate(data_loader):
+        print("Batch Length : ",str(len(data_loader)))
         bar.update(batch_idx+1)
         frame, label = data[0], data[1]
         frame = torch.squeeze(frame)
@@ -214,12 +215,16 @@ def test(model, data_loader, device, is_test=True):
         acc_meter.update(acc_this, label.shape[0])
         loss_meter.update(loss_this.item(), label.shape[0])
         
-        all_preds_pr = torch.cat((all_preds_pr, logits.cpu()), dim=0)
-        all_labels_pr = torch.cat((all_labels_pr, label.cpu()), dim=0)
+        logits = logits.cpu().numpy()
+        for i in range(logits.shape[0]):
+            all_preds_pr = np.append(all_preds_pr, [logits[i]],axis=0)
+        all_labels_pr = np.append(all_labels_pr, label.cpu().numpy())
         all_labels = np.append(all_labels, label.cpu().numpy())
         all_preds = np.append(all_preds, pred.cpu().numpy())
             
     classes = [*CATEGORY_INDEX]
+
+    all_labels_pr = all_labels_pr.astype(int)
     wandb.log({"pr" : wandb.plot.pr_curve(all_labels_pr, all_preds_pr, labels=classes)})
     wandb.log({"conf_mat" : wandb.sklearn.plot_confusion_matrix(all_labels, all_preds, classes)})
 
