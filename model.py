@@ -38,7 +38,7 @@ def Resnet18WithAttention(args):
     model = models.video.r3d_18(pretrained=True)
     #model = torch.hub.load('facebookresearch/pytorchvideo', 'slow_r50', pretrained=True)
 
-    model.stem[0] = nn.Conv3d(8, 64, kernel_size=(1, 7, 7), stride=(1, 2, 2), padding=(0, 3, 3), bias=False)
+    #model.stem[0] = nn.Conv3d(8, 64, kernel_size=(1, 7, 7), stride=(1, 2, 2), padding=(0, 3, 3), bias=False)
 
     # Freeze all layers
     for params in model.parameters():
@@ -48,14 +48,14 @@ def Resnet18WithAttention(args):
     hidden_units2 = 512
     dropout_rate = args.dropout #default 0.3
     attn_dim = args.attn_dim #default 40
-    out_features = model.fc.out_features #400 for kinetics400
+    out_features = 400 #400 for kinetics400
     
     if(args.skip_attention == False):
         model.fc = nn.Sequential(
-            model.fc,
-            nn.TransformerEncoderLayer(d_model = out_features, nhead = attn_dim, dim_feedforward = 512, dropout = dropout_rate, activation = 'relu'),
-            nn.TransformerEncoderLayer(d_model = out_features, nhead = attn_dim, dim_feedforward = 512, dropout = dropout_rate, activation = 'relu'),
-            nn.Linear(out_features, len(CATEGORY_INDEX),bias=True),
+            nn.Flatten(),
+            nn.TransformerEncoderLayer(d_model = 512, nhead = attn_dim, dim_feedforward = 512, dropout = dropout_rate, activation = 'relu'),
+            nn.TransformerEncoderLayer(d_model = 512, nhead = attn_dim, dim_feedforward = 512, dropout = dropout_rate, activation = 'relu'),
+            nn.Linear(512, len(CATEGORY_INDEX),bias=True),
             #nn.Linear(out_features, hidden_units1),
             #nn.ReLU(),
             #nn.Dropout(dropout_rate),

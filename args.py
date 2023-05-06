@@ -72,7 +72,7 @@ def argument_parser():
     )
 
     parser.add_argument(
-        "--attn_dim", type=int, default=40, help="attention dimension"
+        "--attn_dim", type=int, default=64, help="attention dimension"
     )  
          
     parser.add_argument(
@@ -83,4 +83,7 @@ def argument_parser():
         '--skip_attention', action='store_true', default=False
         )
 
+    parser.add_argument(
+        "--run_name", type=str, required=True, help="run name for W&B"
+    ) 
     return parser

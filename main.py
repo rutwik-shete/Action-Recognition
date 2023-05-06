@@ -32,7 +32,25 @@ from model import getModel
 parser = argument_parser()
 args = parser.parse_args()
 
+import wandb
+import random
 
+from Constants import CATEGORY_INDEX
+
+# start a new wandb run to track this script
+wandb.init(
+    # set the wandb project where this run will be logged
+    project="aml",
+    
+    # track hyperparameters and run metadata
+    config={
+    "learning_rate": args.lr,
+    "architecture": args.model,
+    "dataset": args.source_names,
+    "epochs": args.epochs,
+    },
+    name=args.run_name,
+)
 
 # Main Function Code
 
@@ -81,10 +99,12 @@ def main():
 
     model,processor = getModel(args)
     
-    summary(model, input_size=(args.train_batch_size, 8, 3, 224, 224))
+    summary(model, input_size=(args.train_batch_size, args.block_size, 3, 224, 224))
     
     model.to(device)
 
+    wandb.watch(model, log="all")
+    
     learning_rate = args.lr
     optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=1e-8)
 
@@ -118,7 +138,8 @@ def main():
             print("\nValidation Started ....................")
             acc_avg = test(model,val_loader,device,is_test=False)
             print("Validation Ended ....................\n")
-            
+            wandb.log({"acc": acc_avg, "loss": avg_train_loss})
+
             for name in args.target_names:
                 ranklogger.write(name, epoch + 1, acc_avg)
     
@@ -164,6 +185,13 @@ def test(model, data_loader, device, is_test=True):
     correct = 0
     model.eval()
     bar = progressbar.ProgressBar(maxval=len(data_loader)).start()
+    
+    all_preds = np.empty((0))
+    all_labels = np.empty((0))
+    
+    all_labels_pr = torch.empty((0,))
+    all_preds_pr = torch.empty((0,))
+
     for batch_idx, data in enumerate(data_loader):
         bar.update(batch_idx+1)
         frame, label = data[0], data[1]
@@ -185,8 +213,17 @@ def test(model, data_loader, device, is_test=True):
 
         acc_meter.update(acc_this, label.shape[0])
         loss_meter.update(loss_this.item(), label.shape[0])
+        
+        all_preds_pr = torch.cat((all_preds_pr, logits.cpu()), dim=0)
+        all_labels_pr = torch.cat((all_labels_pr, label.cpu()), dim=0)
+        all_labels = np.append(all_labels, label.cpu().numpy())
+        all_preds = np.append(all_preds, pred.cpu().numpy())
+            
+    classes = [*CATEGORY_INDEX]
+    wandb.log({"pr" : wandb.plot.pr_curve(all_labels_pr, all_preds_pr, labels=classes)})
+    wandb.log({"conf_mat" : wandb.sklearn.plot_confusion_matrix(all_labels, all_preds, classes)})
 
-        # print("{:s} Batch [{:02d}/{:02d}] --> Batch Accuracy : {:.2f}%".format("Test" if is_test else "Validation",batch_idx+1,len(data_loader),acc_this))
+    #print("{:s} Batch [{:02d}/{:02d}] --> Batch Accuracy : {:.2f}%".format("Test" if is_test else "Validation",batch_idx+1,len(data_loader),acc_this))
 
     if is_test:
         print('\nTest: Average loss: {:.4f}, Accuracy: {}/{} ({:.2f}%)\n'.format(

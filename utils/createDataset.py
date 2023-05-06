@@ -4,7 +4,7 @@ from Constants import CATEGORY_INDEX
 import shutil
 
 def createDataset(sourceDirectory,block_size,home_dir):
-    destDirectory = osp.join(home_dir,"CustomDataset_{:2d}_frames".format(block_size))
+    destDirectory = osp.join(home_dir,"CustomDataset_{0}_frames".format(block_size))
 
     ds_store = '.DS_Store'
 
