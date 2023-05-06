@@ -113,7 +113,7 @@ def main():
             args.resume, model, optimizer=optimizer
         )
     else:
-        startEpochs = args.epochs
+        startEpochs = 0
 
     ranklogger = RankLogger(args.source_names, args.target_names)
 
