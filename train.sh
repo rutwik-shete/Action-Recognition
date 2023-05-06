@@ -11,7 +11,7 @@ learning_rate=0.0003
 save_log_name=${model}_${block_size}_${epochs}_${train_batch}_${val_batch}_${learning_rate}
 
 # Path To One Directory Before Project Directory "Action-Recognition" , this is where modified data will be created
-home_path=/Users/rutwikshete/Desktop/Codeing/Surrey/SurreyAssignment
+home_path=/mnt/fast/nobackup/users/rs01960/AML
 
 # Python main file path
 main_file_path=${home_path}/Action-Recognition/main.py
@@ -22,7 +22,9 @@ dataset_path=${home_path}/HMDB_simp
 # Path where the logs and checkpoints will be saved , Added to git_ignore so that logs stay in your local
 ckp=${home_path}/Action-Recognition/Logs/$save_log_name
 
-python3 $main_file_path \
+export LD_LIBRARY_PATH=/user/HS402/rs01960/libstdc:$LD_LIBRARY_PATH
+
+/user/HS402/rs01960/miniconda3/envs/pytorch/bin/python3 $main_file_path \
 --model $model \
 --home_path $home_path \
 --dataset_path $dataset_path \
@@ -35,6 +37,6 @@ python3 $main_file_path \
 --lr $learning_rate \
 --epochs $epochs \
 --eval_freq 1 \
---run_name `whoami`_${save_log_name} \
+--run_name Rutwik_${save_log_name} \
 -t $model \
 -s $model

@@ -193,7 +193,6 @@ def test(model, data_loader, device, is_test=True):
     all_preds_pr = np.empty((0,25))
 
     for batch_idx, data in enumerate(data_loader):
-        print("Batch Length : ",str(len(data_loader)))
         bar.update(batch_idx+1)
         frame, label = data[0], data[1]
         frame = torch.squeeze(frame)
