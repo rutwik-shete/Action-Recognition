@@ -52,7 +52,7 @@ def resume_from_checkpoint(ckpt_dir, model, optimizer=None):
         print("Loaded optimizer")
     start_epoch = ckpt["epoch"]
     print(
-        "** previous epoch = {}\t previous avg loss = {:.1%}".format(
+        "** previous epoch = {0}\t previous avg loss = {1}".format(
             start_epoch, ckpt["Avg_Train_Loss"]
         )
     )

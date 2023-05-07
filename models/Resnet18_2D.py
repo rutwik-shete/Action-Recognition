@@ -25,5 +25,3 @@ def Resnet18_2D_With_Attention():
     
     # return model
     pass
-
-Resnet18_2D_With_Attention() 

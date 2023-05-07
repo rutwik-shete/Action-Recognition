@@ -119,8 +119,8 @@ def main():
 
     for epoch in range(startEpochs,args.epochs):
         print("\nStarting Epoch",str(epoch+1),"......")
-        avg_train_loss = train(model,processor,train_loader,val_loader,optimizer,device,epoch+1)
-        print("\nTraining Epoch",str(epoch+1),"Average Loss :",avg_train_loss)
+        avg_train_acc,avg_train_loss = train(model,processor,train_loader,val_loader,optimizer,device,epoch+1)
+        print("\nTraining Epoch",str(epoch+1),"Average Loss :",avg_train_loss,"Average Accuracy :",avg_train_acc)
 
         if(epoch+1) % args.eval_freq == 0:
             print("Saving Checkpoint .......")
@@ -136,12 +136,19 @@ def main():
             )
 
             print("\nValidation Started ....................")
-            acc_avg = test(model,val_loader,device,is_test=False)
+            avg_val_acc,avg_val_loss = test(model,val_loader,device,is_test=False)
             print("Validation Ended ....................\n")
-            wandb.log({"acc": acc_avg, "loss": avg_train_loss})
+
+            wandb.log({
+                "TrainAccuracy":avg_train_acc,
+                "TrainLoss":avg_train_loss,
+                "ValidationAccuracy":avg_val_acc,
+                "ValidationLoss":avg_val_loss,
+                "Epoch":epoch
+            })
 
             for name in args.target_names:
-                ranklogger.write(name, epoch + 1, acc_avg)
+                ranklogger.write(name, epoch + 1, avg_val_acc)
     
     print("\nTest Started ....................")
     test(model,test_loader,device)
@@ -152,6 +159,8 @@ def main():
 
 def train(model, processor, data_loader, val_loader, optimizer, device, epoch):
     loss_meter = AverageMeter()
+    acc_meter = AverageMeter()
+    correct = 0
     model.train()
 
     bar = progressbar.ProgressBar(maxval=len(data_loader)).start()
@@ -167,15 +176,22 @@ def train(model, processor, data_loader, val_loader, optimizer, device, epoch):
         elif(args.model == "resnet18WithAttention"):
             logits = output
 
+        pred = logits.argmax(dim=1, keepdim=True)
+        correct_this = pred.eq(label.view_as(pred)).sum().item()
+        correct += correct_this
+        acc_this = correct_this / label.shape[0] * 100.0
+
         loss_this = F.cross_entropy(logits, label)
         optimizer.zero_grad()
         loss_this.backward()
         optimizer.step()
+        
+        acc_meter.update(acc_this, label.shape[0])
         loss_meter.update(loss_this.item(), label.shape[0])
         
         # print("Epoch {:02d} Batch [{:02d}/{:02d}] --> Avg Loss : {:f}".format(epoch,batch_idx+1,len(data_loader),loss_meter.avg))
     
-    return loss_meter.avg
+    return acc_meter.avg, loss_meter.avg
     
 
 
@@ -224,8 +240,10 @@ def test(model, data_loader, device, is_test=True):
     classes = [*CATEGORY_INDEX]
 
     all_labels_pr = all_labels_pr.astype(int)
-    wandb.log({"pr" : wandb.plot.pr_curve(all_labels_pr, all_preds_pr, labels=classes)})
-    wandb.log({"conf_mat" : wandb.sklearn.plot_confusion_matrix(all_labels, all_preds, classes)})
+
+    if is_test:
+        wandb.log({"pr" : wandb.plot.pr_curve(all_labels_pr, all_preds_pr, labels=classes)})
+        wandb.log({"conf_mat" : wandb.sklearn.plot_confusion_matrix(all_labels, all_preds, classes)})
 
     #print("{:s} Batch [{:02d}/{:02d}] --> Batch Accuracy : {:.2f}%".format("Test" if is_test else "Validation",batch_idx+1,len(data_loader),acc_this))
 
@@ -237,7 +255,7 @@ def test(model, data_loader, device, is_test=True):
         print('\nValidation: Average loss: {:.4f}, Accuracy: {}/{} ({:.2f}%)\n'.format(
         loss_meter.avg, correct, len(data_loader.dataset), acc_meter.avg))
 
-    return acc_meter.avg
+    return acc_meter.avg,loss_meter.avg
 
 if __name__ == "__main__":
     start_time = datetime.now()
