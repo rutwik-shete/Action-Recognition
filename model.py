@@ -24,17 +24,6 @@ def timeSformer400():
     
 def Resnet18WithAttention(args):
 
-    # Define the custom image processor
-    # def custom_image_processor(image):
-    #     transforms = Compose([
-    #         Resize(224, interpolation=2),  # Resize the shortest edge to 224
-    #         CenterCrop(224),  # Perform center crop with the specified size
-    #         ToTensor(),
-    #         Normalize(mean=[0.45, 0.45, 0.45], std=[0.225, 0.225, 0.225]),
-    #         Lambda(lambda x: x * 0.00392156862745098)  # Apply the rescale factor
-    #     ])
-    #     return transforms(image)
-
     # Load the pre-trained 3D CNN model (replace with your desired pre-trained model)
     # Accepts batched (B, T, C, H, W) trained on Kinetics 400
     model = models.video.r3d_18(pretrained=True)
@@ -52,19 +41,13 @@ def Resnet18WithAttention(args):
     attn_dim = args.attn_dim #default 40
     out_features = 400 #400 for kinetics400
     
+    #model.avgpool = nn.Identity() #nn.AdaptiveAvgPool3d((1, 6, 6))
     if(args.skip_attention == False):
         model.fc = nn.Sequential(
             nn.Flatten(),
-            nn.TransformerEncoderLayer(d_model = 512, nhead = attn_dim, dim_feedforward = 512, dropout = dropout_rate, activation = 'relu'),
-            nn.TransformerEncoderLayer(d_model = 512, nhead = attn_dim, dim_feedforward = 512, dropout = dropout_rate, activation = 'relu'),
-            nn.Linear(512, len(CATEGORY_INDEX),bias=True),
-            #nn.Linear(out_features, hidden_units1),
-            #nn.ReLU(),
-            #nn.Dropout(dropout_rate),
-            #nn.Linear(hidden_units1, hidden_units2),
-            #nn.ReLU(),
-            #nn.Dropout(dropout_rate),
-            #nn.Linear(hidden_units2, out_features)
+            nn.TransformerEncoderLayer(d_model = hidden_units1, nhead = attn_dim, dim_feedforward = 512, dropout = dropout_rate, activation = 'relu'),
+            nn.TransformerEncoderLayer(d_model = hidden_units2, nhead = attn_dim, dim_feedforward = 512, dropout = dropout_rate, activation = 'relu'),
+            nn.Linear(hidden_units2, len(CATEGORY_INDEX),bias=True),
         )
     else:
         model.fc = nn.Sequential(
