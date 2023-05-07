@@ -9,6 +9,8 @@ from utils.torchtools import (save_checkpoint,resume_from_checkpoint)
 import time
 from datetime import datetime
 import progressbar
+import pandas as pd
+from utils.iotools import check_isfile
 
 
 import numpy as np
@@ -85,7 +87,28 @@ def main():
     print("Initializing Dataloader")
 
     #Split Dataset
-    train_data,val_data,test_data = split_data(customDatasetPath)
+
+    train_split_path = osp.join(args.home_path,"train.csv")
+    val_split_path = osp.join(args.home_path,"val.csv")
+    test_split_path = osp.join(args.home_path,"test.csv")
+
+    if not (check_isfile(train_split_path) and check_isfile(val_split_path) and check_isfile(test_split_path)):
+
+        train_data,val_data,test_data = split_data(customDatasetPath)
+
+        train_data_df = pd.DataFrame({"VideoId":train_data})
+        val_data_df = pd.DataFrame({"VideoId":val_data})
+        test_data_df = pd.DataFrame({"VideoId":test_data})
+
+        train_data_df.to_csv(osp.join(args.home_path,"train.csv"),index=False)
+        val_data_df.to_csv(osp.join(args.home_path,"val.csv"),index=False)
+        test_data_df.to_csv(osp.join(args.home_path,"test.csv"),index=False)
+    
+    else :
+
+        train_data = pd.read_csv(train_split_path)['VideoId'].values.tolist()
+        val_data = pd.read_csv(val_split_path)['VideoId'].values.tolist()
+        test_data = pd.read_csv(test_split_path)['VideoId'].values.tolist()
 
     val_dataset = BlockFrameDataset(customDatasetPath,val_data,block_size=args.block_size)
     train_dataset = BlockFrameDataset(customDatasetPath,train_data,block_size=args.block_size)

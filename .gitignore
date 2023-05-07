@@ -8,3 +8,5 @@ KTH_pickle
 Logs
 wandb
 train.sh
+config.sh
+train.sh
