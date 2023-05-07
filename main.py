@@ -10,7 +10,7 @@ import time
 from datetime import datetime
 import progressbar
 import pandas as pd
-from utils.iotools import check_isfile
+from utils.iotools import (check_isfile,mkdir_if_missing)
 
 
 import numpy as np
@@ -88,9 +88,9 @@ def main():
 
     #Split Dataset
 
-    train_split_path = osp.join(args.home_path,"train.csv")
-    val_split_path = osp.join(args.home_path,"val.csv")
-    test_split_path = osp.join(args.home_path,"test.csv")
+    train_split_path = osp.join(args.home_path,"splitInfo_BlockSize_"+str(args.block_size),"train.csv")
+    val_split_path = osp.join(args.home_path,"splitInfo_BlockSize_"+str(args.block_size),"val.csv")
+    test_split_path = osp.join(args.home_path,"splitInfo_BlockSize_"+str(args.block_size),"test.csv")
 
     if not (check_isfile(train_split_path) and check_isfile(val_split_path) and check_isfile(test_split_path)):
 
@@ -100,9 +100,11 @@ def main():
         val_data_df = pd.DataFrame({"VideoId":val_data})
         test_data_df = pd.DataFrame({"VideoId":test_data})
 
-        train_data_df.to_csv(osp.join(args.home_path,"train.csv"),index=False)
-        val_data_df.to_csv(osp.join(args.home_path,"val.csv"),index=False)
-        test_data_df.to_csv(osp.join(args.home_path,"test.csv"),index=False)
+        mkdir_if_missing(osp.join(args.home_path,"splitInfo_BlockSize_"+str(args.block_size)))
+
+        train_data_df.to_csv(train_split_path,index=False)
+        val_data_df.to_csv(val_split_path,index=False)
+        test_data_df.to_csv(test_split_path ,index=False)
     
     else :
 
