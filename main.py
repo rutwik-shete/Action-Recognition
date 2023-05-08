@@ -24,6 +24,7 @@ import warnings
 import torch
 from torch.utils.data import DataLoader
 from torch import optim
+from torch.optim.lr_scheduler import MultiStepLR
 import torch.nn.functional as F
 from torchinfo import summary
 
@@ -131,7 +132,8 @@ def main():
     wandb.watch(model, log="all")
     
     learning_rate = args.lr
-    optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=1e-8)
+    optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=1e-4)
+    scheduler = MultiStepLR(optimizer, milestones=[5,10], gamma=0.1)
 
     if args.resume and osp.isdir(args.resume):
         startEpochs = resume_from_checkpoint(
@@ -174,7 +176,9 @@ def main():
 
             for name in args.target_names:
                 ranklogger.write(name, epoch + 1, avg_val_acc)
-    
+                
+        scheduler.step()
+        
     print("\nTest Started ....................")
     test(model,test_loader,device)
     print("Test Ended ....................\n")
