@@ -21,7 +21,7 @@
             "justMyCode": false,
             "args": [
                 "--model",
-                "timesformer400",
+                "2Dresnet18",
                 "--home_path",
                 "/Users/rutwikshete/Desktop/Codeing/Surrey/SurreyAssignment",
                 "--dataset_path",
