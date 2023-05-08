@@ -10,6 +10,7 @@ from Constants import CATEGORY_INDEX
 
 from models.Resnet18_2D import Resnet18_2D_With_Attention
 from models.Resnet18_3D import Resnet18_3D_With_Attention
+from models.Timesformer600 import timeSformer600
 
 def timeSformer400():
 
@@ -27,5 +28,7 @@ def getModel(args):
     print("Proceeding with Model:", args.model)
     if(args.model == "timesformer400"):
         return timeSformer400()
+    elif(args.model == "timesformer600"):
+        return timeSformer600()
     elif(args.model == "resnet18WithAttention"):
         return Resnet18_3D_With_Attention(args)
