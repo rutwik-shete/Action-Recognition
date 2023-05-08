@@ -48,7 +48,7 @@ def Resnet18_2D_With_Attention():
     model.avgpool = nn.Flatten()
 
     model.fc = nn.Sequential(
-        EncodingBlock()
+        EncodingBlock(123)
         # PositionalEncoding(d_model=25088)
     )
     
