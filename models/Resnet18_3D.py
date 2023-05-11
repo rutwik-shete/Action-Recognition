@@ -20,6 +20,9 @@ def Resnet18_3D_With_Attention(args):
     # Freeze all layers
     for params in model.parameters():
         params.requires_grad = False
+    
+    if(args.input_learnable == True):
+        model.stem[0].weight.requires_grad = True
 
     hidden_units1 = 512
     hidden_units2 = 512
