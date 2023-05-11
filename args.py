@@ -81,8 +81,12 @@ def argument_parser():
 
     parser.add_argument(
         '--skip_attention', action='store_true', default=False
-        )
+    )
 
+    parser.add_argument(
+        '--input_learnable', action='store_true', default=False
+    )
+        
     parser.add_argument(
         "--run_name", type=str, required=True, help="run name for W&B"
     ) 
