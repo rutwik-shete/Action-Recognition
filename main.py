@@ -117,9 +117,9 @@ def main():
     train_dataset = BlockFrameDataset(customDatasetPath,train_data,block_size=args.block_size)
     test_dataset = BlockFrameDataset(customDatasetPath,test_data,block_size=args.block_size)
 
-    val_loader = DataLoader(val_dataset,shuffle=True,batch_size=args.val_batch_size,num_workers=1, pin_memory=True)
-    train_loader = DataLoader(train_dataset,shuffle=True,batch_size=args.train_batch_size,num_workers=1, pin_memory=True)
-    test_loader = DataLoader(test_dataset,shuffle=True,batch_size=args.test_batch_size,num_workers=1, pin_memory=True)
+    val_loader = DataLoader(val_dataset,shuffle=True,batch_size=args.val_batch_size,num_workers=1, pin_memory=True,drop_last=True)
+    train_loader = DataLoader(train_dataset,shuffle=True,batch_size=args.train_batch_size,num_workers=1, pin_memory=True,drop_last=True)
+    test_loader = DataLoader(test_dataset,shuffle=True,batch_size=args.test_batch_size,num_workers=1, pin_memory=True,drop_last=True)
 
     # Procuring the pretrained model
 
@@ -202,7 +202,7 @@ def train(model, processor, data_loader, val_loader, optimizer, device, epoch):
 
         if(args.model == "timesformer400" or args.model == "timesformer600"):
             logits = output.logits
-        elif(args.model == "resnet18WithAttention"):
+        elif(args.model == "resnet18WithAttention" or args.model == "2Dresnet18"):
             logits = output
 
         pred = logits.argmax(dim=1, keepdim=True)
@@ -247,7 +247,7 @@ def test(model, data_loader, device, is_test=True):
         
         if(args.model == "timesformer400" or args.model == "timesformer600"):
             logits = output.logits
-        elif(args.model == "resnet18WithAttention"):
+        elif(args.model == "resnet18WithAttention" or args.model == "2Dresnet18"):
             logits = output
 
         loss_this = F.cross_entropy(logits, label)
