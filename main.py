@@ -133,7 +133,7 @@ def main():
     
     learning_rate = args.lr
     optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=1e-4)
-    scheduler = MultiStepLR(optimizer, milestones=[5,10], gamma=0.1)
+    # scheduler = MultiStepLR(optimizer, milestones=[5,10], gamma=0.1)
 
     if args.resume and osp.isdir(args.resume):
         startEpochs = resume_from_checkpoint(
@@ -177,7 +177,7 @@ def main():
             for name in args.target_names:
                 ranklogger.write(name, epoch + 1, avg_val_acc)
                 
-        scheduler.step()
+        # scheduler.step()
         
     print("\nTest Started ....................")
     test(model,test_loader,device)
@@ -200,7 +200,7 @@ def train(model, processor, data_loader, val_loader, optimizer, device, epoch):
         frame, label = frame.to(device), label.to(device)
         output = model(frame)
 
-        if(args.model == "timesformer400"):
+        if(args.model == "timesformer400" or args.model == "timesformer600"):
             logits = output.logits
         elif(args.model == "resnet18WithAttention"):
             logits = output
@@ -245,7 +245,7 @@ def test(model, data_loader, device, is_test=True):
         with torch.no_grad():
             output = model(frame)
         
-        if(args.model == "timesformer400"):
+        if(args.model == "timesformer400" or args.model == "timesformer600"):
             logits = output.logits
         elif(args.model == "resnet18WithAttention"):
             logits = output
