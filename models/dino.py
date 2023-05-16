@@ -48,8 +48,11 @@ class DINO(nn.Module):
         teacher_output = teacher_output.view(B, T, -1)  # Reshape to (B, T, -1)
         student_output = student_output.view(B, T, -1)  # Reshape to (B, T, -1)
 
-        teacher_output = teacher_output.mean(dim=1)  # Take the mean across the T dimension
-        student_output = student_output.mean(dim=1)  # Take the mean across the T dimension
+        teacher_output = teacher_output.permute(0, 2, 1)  # Permute the dimensions to (B, -1, T)
+        student_output = student_output.permute(0, 2, 1)  # Permute the dimensions to (B, -1, T)
+
+        teacher_output = teacher_output.mean(dim=2)  # Take the mean across the T dimension
+        student_output = student_output.mean(dim=2)  # Take the mean across the T dimension
 
         print("Teacher output shape:", teacher_output.shape)
         print("Student output shape:", student_output.shape)
