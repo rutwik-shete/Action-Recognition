@@ -202,7 +202,7 @@ def train(model, processor, data_loader, val_loader, optimizer, device, epoch):
 
         if(args.model == "timesformer400" or args.model == "timesformer600"):
             logits = output.logits
-        elif(args.model == "resnet18WithAttention" or args.model == "2Dresnet18"):
+        elif(args.model == "resnet18WithAttention" or args.model == "2Dresnet18" or args.model == "resnet182Plus1"):
             logits = output
 
         pred = logits.argmax(dim=1, keepdim=True)
@@ -247,7 +247,7 @@ def test(model, data_loader, device, is_test=True):
         
         if(args.model == "timesformer400" or args.model == "timesformer600"):
             logits = output.logits
-        elif(args.model == "resnet18WithAttention" or args.model == "2Dresnet18"):
+        elif(args.model == "resnet18WithAttention" or args.model == "2Dresnet18" or args.model == "resnet182Plus1"):
             logits = output
 
         loss_this = F.cross_entropy(logits, label)

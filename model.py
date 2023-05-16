@@ -33,5 +33,5 @@ def getModel(args):
         return timeSformer600()
     elif(args.model == "2Dresnet18"):
         return Resnet18_2D_With_Attention()
-    elif(args.model == "resnet18WithAttention"):
+    elif(args.model == "resnet18WithAttention" or args.model == "resnet182Plus1"):
         return Resnet18_3D_With_Attention(args)
