@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torchvision.models as models
 from Constants import CATEGORY_INDEX
+from transformers import AutoImageProcessor
 
 
 class DINO(nn.Module):
@@ -27,10 +28,11 @@ class DINO(nn.Module):
             # If the input tensor has shape (B, C, H, W)
             B, C, H, W = x.shape
             T = 1
-            x = x.unsqueeze(1)  # Add a temporal dimension (B, T=1, C, H, W)
+            x = x.permute(0, 2, 1, 3, 4)  # Permute the dimensions to (B, T=1, C, H, W)
         elif num_dims == 5:
             # If the input tensor has shape (B, T, C, H, W)
             B, T, C, H, W = x.shape
+            x = x.permute(0, 2, 1, 3, 4)  # Permute the dimensions to (B, C, T, H, W)
         else:
             raise ValueError("Invalid input shape. Expected 4 or 5 dimensions.")
 
@@ -61,8 +63,13 @@ class DINO(nn.Module):
         return teacher_logits, student_logits
 
 
+
+
 def Resnet18_3d(args, num_classes=len(CATEGORY_INDEX), pretrained=True):
     model = models.video.r3d_18(pretrained=pretrained)
+
+    # Modify the stem convolutional layer to have 32 input channels
+    model.stem[0] = nn.Conv3d(32, 64, kernel_size=(3, 7, 7), stride=(1, 2, 2), padding=(1, 3, 3), bias=False)
 
     # Modify the last convolutional layer to have 3 output channels
     model.layer4[1].conv2 = nn.Conv3d(256, 3, kernel_size=(1, 1, 1), stride=(1, 1, 1), bias=False)
@@ -70,9 +77,6 @@ def Resnet18_3d(args, num_classes=len(CATEGORY_INDEX), pretrained=True):
     # Freeze all layers
     for params in model.parameters():
         params.requires_grad = False
-
-    if args.input_learnable:
-        model.stem[0].weight.requires_grad = True
 
     hidden_units1 = 512
     hidden_units2 = 512
@@ -99,5 +103,7 @@ def Resnet18_3d(args, num_classes=len(CATEGORY_INDEX), pretrained=True):
     return model
 
 def DINOModel(args):
-    return DINO(args)
+    model = DINO(args)
+    processor = AutoImageProcessor.from_pretrained("facebook/timesformer-base-finetuned-k400")
+    return model, processor
 
