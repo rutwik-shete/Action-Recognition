@@ -90,4 +90,46 @@ def argument_parser():
     parser.add_argument(
         "--run_name", type=str, required=True, help="run name for W&B"
     ) 
+
+    parser.add_argument(
+        "-l", "--loging-freq", type=int, default=200
+    )
+
+    parser.add_argument(
+        "--momentum-teacher", type=int, default=0.9995
+    )
+
+    parser.add_argument(
+        "-c","--n-crops", type=int, default=4
+    )
+
+    parser.add_argument(
+        "-o", "--out-dim", type=int, default=1024
+    )
+
+    parser.add_argument(
+        "--clip-grad", type=float, default=2.0
+    )
+
+    parser.add_argument(
+        "--norm-last-layer", action="store_true"
+    )
+
+    parser.add_argument(
+        "--teacher-temp", type=float, default=0.04
+    )
+
+    parser.add_argument(
+        "--student-temp", type=float, default=0.1
+    )
+
+    parser.add_argument(
+        "--pretrained", action="store_true"
+    )
+
+    parser.add_argument(
+        "-w", "--weight-decay", type=float, default=0.04
+    )
     return parser
+
+    

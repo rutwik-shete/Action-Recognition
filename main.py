@@ -122,10 +122,16 @@ def main():
     test_loader = DataLoader(test_dataset,shuffle=True,batch_size=args.test_batch_size,num_workers=1, pin_memory=True,drop_last=True)
 
     # Procuring the pretrained model
-
     model,processor = getModel(args)
     
-    summary(model, input_size=(args.train_batch_size, args.block_size, 3, 224, 224))
+    if args.model == "dino":
+        dummy_input = torch.randn(
+            args.train_batch_size, args.block_size * args.n_crops, 3, 224, 224
+        ).to(device)
+        summary(model, input_size=dummy_input.shape[1:])
+    else:    
+        summary(model, input_size=(args.train_batch_size, args.block_size, 3, 224, 224))
+
     
     model.to(device)
 
@@ -194,15 +200,21 @@ def train(model, processor, data_loader, val_loader, optimizer, device, epoch):
 
     bar = progressbar.ProgressBar(maxval=len(data_loader)).start()
     for batch_idx, data in enumerate(data_loader):
-        bar.update(batch_idx+1)
+        bar.update(batch_idx + 1)
         frame, label = data[0], data[1]
         frame = torch.squeeze(frame)
         frame, label = frame.to(device), label.to(device)
+
+        if args.model == "dino":
+            # Preprocess the frame using the image processor
+            frame = processor(frame)
+
+        # Forward pass
         output = model(frame)
 
-        if(args.model == "timesformer400" or args.model == "timesformer600"):
+        if args.model == "timesformer400" or args.model == "timesformer600":
             logits = output.logits
-        elif(args.model == "resnet18WithAttention" or args.model == "2Dresnet18"):
+        elif args.model == "resnet18WithAttention" or args.model == "2Dresnet18":
             logits = output
 
         pred = logits.argmax(dim=1, keepdim=True)
@@ -214,13 +226,12 @@ def train(model, processor, data_loader, val_loader, optimizer, device, epoch):
         optimizer.zero_grad()
         loss_this.backward()
         optimizer.step()
-        
+
         acc_meter.update(acc_this, label.shape[0])
         loss_meter.update(loss_this.item(), label.shape[0])
-        
-        # print("Epoch {:02d} Batch [{:02d}/{:02d}] --> Avg Loss : {:f}".format(epoch,batch_idx+1,len(data_loader),loss_meter.avg))
-    
+
     return acc_meter.avg, loss_meter.avg
+
     
 
 
