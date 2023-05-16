@@ -28,15 +28,16 @@ class DINO(nn.Module):
             # If the input tensor has shape (B, C, H, W)
             B, C, H, W = x.shape
             T = 1
-            x = x.permute(0, 2, 1, 3, 4)  # Permute the dimensions to (B, T=1, C, H, W)
+            x = x.unsqueeze(1)  # Add a temporal dimension (B, T=1, C, H, W)
         elif num_dims == 5:
             # If the input tensor has shape (B, T, C, H, W)
             B, T, C, H, W = x.shape
-            x = x.permute(0, 2, 1, 3, 4)  # Permute the dimensions to (B, C, T, H, W)
         else:
             raise ValueError("Invalid input shape. Expected 4 or 5 dimensions.")
 
         print("Input shape:", x.shape)
+
+        x = x.permute(0, 2, 1, 3, 4)  # Permute the dimensions to (B, C, T, H, W)
 
         x = x.view(B * T, C, H, W)  # Reshape to (B*T, C, H, W)
 
@@ -64,6 +65,7 @@ class DINO(nn.Module):
         print("Student logits shape:", student_logits.shape)
 
         return teacher_logits, student_logits
+
 
 
 
