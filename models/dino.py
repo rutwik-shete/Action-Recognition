@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from torch import Tensor
 import torchvision.models as models
 from torchvision.transforms import transforms
 from Constants import CATEGORY_INDEX
@@ -16,7 +17,6 @@ def trunc_normal_(tensor, mean=0., std=1., a=-2., b=2.):
     return mean + std * clipped
 
 
-
 class DINO(nn.Module):
     def __init__(self, args, num_classes=len(CATEGORY_INDEX)):
         super(DINO, self).__init__()
@@ -26,9 +26,11 @@ class DINO(nn.Module):
         self.student = nn.Sequential(*list(self.teacher.children())[:-1])  # Use the loaded ViT as the student, but without the classifier
         self.augmentations = self.get_augmentations()
 
-    def forward(self, x):
-        # Adjust input dimensions (Remove the extra dimension for 8-frame blocks)
-        x = torch.squeeze(x, dim=0)
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        B, T, C, H, W = x.size()
+
+        # Reshape the input tensor
+        x = x.permute(0, 2, 1, 3, 4)  # Permute dimensions to (B, T, C, H, W)
 
         print("Processing input...")
         x1 = self.augmentations(x.clone())  # Apply some augmentations to x
@@ -43,10 +45,11 @@ class DINO(nn.Module):
         print("Student output shape:", student_output.shape)
 
         # Reshape the outputs to match the input_size
-        teacher_output = teacher_output.view(self.args.train_batch_size, self.args.block_size, -1, 7, 7)
-        student_output = student_output.view(self.args.train_batch_size, self.args.block_size, -1, 7, 7)
+        teacher_output = teacher_output.view(B, T, -1, 7, 7)
+        student_output = student_output.view(B, T, -1, 7, 7)
 
         return teacher_output, student_output
+
 
     def create_vit_model(self):
         print("Creating Vision Transformer model...")
@@ -75,13 +78,20 @@ class DINO(nn.Module):
                 transforms.ColorJitter(brightness=0.4, contrast=0.4, saturation=0.2, hue=0.1)
             ], p=0.8),
             transforms.RandomGrayscale(p=0.2),
-            transforms.GaussianBlur(3, sigma=(0.1, 2.0)), # Gaussian blur as in DINO paper
+            transforms.GaussianBlur(3, sigma=(0.1, 2.0)),  # Gaussian blur as in DINO paper
             transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]) # Normalization values for ImageNet
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])  # Normalization values for ImageNet
         ]
+
+        if self.args.model == "dino":
+            augmentation.insert(0, transforms.Lambda(lambda x: x.permute(1, 0, 2, 3, 4).contiguous().view(-1, *x.shape[2:])))  # Reshape and permute tensor
+
+
         return transforms.Compose(augmentation)
+
 
 def DINOModel(args):
     print("Creating DINO model and processor...")
     model = DINO(args)
     return model
+
