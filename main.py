@@ -124,13 +124,20 @@ def main():
     # Procuring the pretrained model
     model,processor = getModel(args)
     
+    # Procuring the pretrained model
+    model, processor = getModel(args)
+
     if args.model == "dino":
         dummy_input = torch.randn(
-            args.train_batch_size, 3, args.block_size, 224, 224
+            args.train_batch_size * args.block_size, 3, 224, 224
         ).to(device)  # Update the dummy input shape
-        summary(model, input_size=dummy_input.shape)  # Remove the indexing
+        dummy_input = dummy_input.view(
+            args.train_batch_size, args.block_size, 3, 224, 224
+        )  # Reshape the dummy input tensor
+        summary(model, input_size=dummy_input.shape[1:])  # Remove the indexing
     else:
         summary(model, input_size=(args.train_batch_size, args.block_size, 3, 224, 224))
+
 
     
 
@@ -222,7 +229,7 @@ def train(model, processor, data_loader, val_loader, optimizer, device, epoch):
 
             if args.model == "timesformer400" or args.model == "timesformer600":
                 logits = output.logits
-            elif args.model == "resnet18WithAttention" or args.model == "2Dresnet18":
+            elif args.model == "resnet18WithAttention" or args.model == "2Dresnet18" or args.model == "resnet50":
                 logits = output
 
             pred = logits.argmax(dim=1, keepdim=True)
@@ -271,7 +278,7 @@ def test(model, data_loader, device, is_test=True):
         
         if(args.model == "timesformer400" or args.model == "timesformer600"):
             logits = output.logits
-        elif(args.model == "resnet18WithAttention" or args.model == "2Dresnet18"):
+        elif(args.model == "resnet18WithAttention" or args.model == "2Dresnet18" or args.model == "resnet50"):
             logits = output
         
 

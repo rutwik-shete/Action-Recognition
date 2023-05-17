@@ -8,8 +8,6 @@ from data_manager import BlockFrameDataset
 import timm
 from torchvision.transforms.functional import to_pil_image
 
-
-
 def trunc_normal_(tensor, mean=0., std=1., a=-2., b=2.):
     # Generate samples from a normal distribution which follows N(mean, std^2)
     r = tensor.new_tensor(torch.randn(tensor.shape))
@@ -17,7 +15,6 @@ def trunc_normal_(tensor, mean=0., std=1., a=-2., b=2.):
     clipped = r.clamp(min=a, max=b)
     # Scale and shift the output
     return mean + std * clipped
-
 
 class DINO(nn.Module):
     def __init__(self, args, num_classes=len(CATEGORY_INDEX)):
@@ -29,10 +26,10 @@ class DINO(nn.Module):
         self.augmentations = self.get_augmentations()
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        B, C, T, H, W = x.size()
+        B, T, C, H, W = x.size()
 
         # Reshape the input tensor
-        x = x.permute(0, 2, 1, 3, 4)  # Permute dimensions to (B, T, C, H, W)
+        x = x.permute(0, 2, 1, 3, 4)  # Permute dimensions to (B, C, T, H, W)
 
         print("Processing input...")
         x1 = self.augmentations(x.clone())  # Apply some augmentations to x
@@ -47,11 +44,10 @@ class DINO(nn.Module):
         print("Student output shape:", student_output.shape)
 
         # Reshape the outputs to match the input_size
-        teacher_output = teacher_output.view(B, T, -1, 7, 7)
-        student_output = student_output.view(B, T, -1, 7, 7)
+        teacher_output = teacher_output.view(B, T, C, -1, 7, 7)
+        student_output = student_output.view(B, T, C, -1, 7, 7)
 
         return teacher_output, student_output
-
 
 
     def create_vit_model(self):
@@ -81,13 +77,13 @@ class DINO(nn.Module):
             ], p=0.8),
             transforms.RandomGrayscale(p=0.2),
             transforms.GaussianBlur(3, sigma=(0.1, 2.0)),  # Gaussian blur as in DINO paper
+            transforms.ToTensor(),
         ]
 
         if self.args.model == "dino":
-            augmentation.insert(0, transforms.ToPILImage())  # Convert tensor to PIL Image
+            augmentation.insert(0, transforms.Lambda(lambda x: x.permute(1, 0, 2, 3)))  # Permute tensor dimensions
 
         augmentation.extend([
-            transforms.ToTensor(),
             transforms.Normalize(
                 mean=[0.485, 0.456, 0.406],
                 std=[0.229, 0.224, 0.225]
@@ -97,9 +93,7 @@ class DINO(nn.Module):
         return transforms.Compose(augmentation)
 
 
-
 def DINOModel(args):
     print("Creating DINO model and processor...")
     model = DINO(args)
     return model
-
