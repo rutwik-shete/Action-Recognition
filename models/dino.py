@@ -1,114 +1,86 @@
 import torch
 import torch.nn as nn
 import torchvision.models as models
+from torchvision.transforms import transforms
 from Constants import CATEGORY_INDEX
-from transformers import AutoImageProcessor
+from data_manager import BlockFrameDataset
+import timm
+
+
+def trunc_normal_(tensor, mean=0., std=1., a=-2., b=2.):
+    # Generate samples from a normal distribution which follows N(mean, std^2)
+    r = tensor.new_tensor(torch.randn(tensor.shape))
+    # Apply clip to keep values within specified range (a, b)
+    clipped = r.clamp(min=a, max=b)
+    # Scale and shift the output
+    return mean + std * clipped
+
 
 
 class DINO(nn.Module):
     def __init__(self, args, num_classes=len(CATEGORY_INDEX)):
         super(DINO, self).__init__()
-        self.teacher = Resnet18_3d(args, num_classes, pretrained=True)
-        self.student = Resnet18_3d(args, num_classes, pretrained=True)
-        self.classifier = nn.Linear(512, num_classes)
-
-        self.loging_freq = args.loging_freq
-        self.momentum_teacher = args.momentum_teacher
-        self.n_crops = args.n_crops
-        self.out_dim = args.out_dim
-        self.clip_grad = args.clip_grad
-        self.norm_last_layer = args.norm_last_layer
-        self.teacher_temp = args.teacher_temp
-        self.student_temp = args.student_temp
+        self.args = args
+        print("Initializing DINO model...")
+        self.teacher = self.create_vit_model()  # Load the pre-trained ViT as the teacher
+        self.student = nn.Sequential(*list(self.teacher.children())[:-1])  # Use the loaded ViT as the student, but without the classifier
+        self.augmentations = self.get_augmentations()
 
     def forward(self, x):
-        num_dims = len(x.shape)
+        # Adjust input dimensions (Remove the extra dimension for 8-frame blocks)
+        x = torch.squeeze(x, dim=0)
 
-        if num_dims == 4:
-            # If the input tensor has shape (B, C, H, W)
-            B, C, H, W = x.shape
-            T = 1
-            x = x.unsqueeze(1)  # Add a temporal dimension (B, T=1, C, H, W)
-        elif num_dims == 5:
-            # If the input tensor has shape (B, T, C, H, W)
-            B, T, C, H, W = x.shape
-        else:
-            raise ValueError("Invalid input shape. Expected 4 or 5 dimensions.")
+        print("Processing input...")
+        x1 = self.augmentations(x.clone())  # Apply some augmentations to x
+        x2 = self.augmentations(x)  # Apply different augmentations to x
 
-        print("Input shape:", x.shape)
-
-        x = x.permute(0, 2, 1, 3, 4)  # Permute the dimensions to (B, C, T, H, W)
-
-        x = x.view(B * T, C, H, W)  # Reshape to (B*T, C, H, W)
-
-        print("Reshaped input shape:", x.shape)
-
-        teacher_output = self.teacher(x)  # Pass the input through the teacher network
-        student_output = self.student(x)  # Pass the input through the student network
-
-        teacher_output = teacher_output.view(B, T, -1)  # Reshape to (B, T, -1)
-        student_output = student_output.view(B, T, -1)  # Reshape to (B, T, -1)
-
-        teacher_output = teacher_output.permute(0, 2, 1)  # Permute the dimensions to (B, -1, T)
-        student_output = student_output.permute(0, 2, 1)  # Permute the dimensions to (B, -1, T)
-
-        teacher_output = teacher_output.mean(dim=2)  # Take the mean across the T dimension
-        student_output = student_output.mean(dim=2)  # Take the mean across the T dimension
-
+        print("Passing input through teacher network...")
+        teacher_output = self.teacher(x1)  # Pass the first input through the teacher network
         print("Teacher output shape:", teacher_output.shape)
+
+        print("Passing input through student network...")
+        student_output = self.student(x2)  # Pass the second input through the student network
         print("Student output shape:", student_output.shape)
 
-        teacher_logits = self.classifier(teacher_output)  # Pass the teacher output through the classifier
-        student_logits = self.classifier(student_output)  # Pass the student output through the classifier
+        # Reshape the outputs to match the input_size
+        teacher_output = teacher_output.view(self.args.train_batch_size, self.args.block_size, -1, 7, 7)
+        student_output = student_output.view(self.args.train_batch_size, self.args.block_size, -1, 7, 7)
 
-        print("Teacher logits shape:", teacher_logits.shape)
-        print("Student logits shape:", student_logits.shape)
+        return teacher_output, student_output
 
-        return teacher_logits, student_logits
+    def create_vit_model(self):
+        print("Creating Vision Transformer model...")
+        model = timm.create_model('vit_base_patch16_224', pretrained=True)
 
+        # Replace the last layer of the Vision Transformer model
+        if hasattr(model, "head"):
+            num_ftrs = model.head.in_features  # get the number of input features for the head layer
+            model.head = nn.Linear(num_ftrs, len(CATEGORY_INDEX))  # replace the head layer
+        else:
+            raise AttributeError("The model does not have a suitable attribute to replace the last layer.")
 
+        # Initialize the last layer with truncated normal distribution
+        trunc_normal_(model.head.weight, std=0.02)
+        nn.init.constant_(model.head.bias, 0)
 
+        return model
 
-
-def Resnet18_3d(args, num_classes=len(CATEGORY_INDEX), pretrained=True):
-    model = models.video.r3d_18(pretrained=pretrained)
-
-    # Modify the stem convolutional layer to have 32 input channels
-    model.stem[0] = nn.Conv3d(32, 64, kernel_size=(3, 7, 7), stride=(1, 2, 2), padding=(1, 3, 3), bias=False)
-
-    # Modify the last convolutional layer to have 3 output channels
-    model.layer4[1].conv2 = nn.Conv3d(256, 3, kernel_size=(1, 1, 1), stride=(1, 1, 1), bias=False)
-
-    # Freeze all layers
-    for params in model.parameters():
-        params.requires_grad = False
-
-    hidden_units1 = 512
-    hidden_units2 = 512
-    dropout_rate = args.dropout
-    attn_dim = args.attn_dim
-    out_features = 400
-
-    if not args.skip_attention:
-        model.fc = nn.Sequential(
-            nn.AdaptiveAvgPool3d((1, 1, 1)),
-            nn.Flatten(),
-            nn.Linear(512, hidden_units1),
-            nn.ReLU(inplace=True),
-            nn.Linear(hidden_units1, hidden_units2),
-            nn.ReLU(inplace=True),
-        )
-    else:
-        model.fc = nn.Sequential(
-            nn.AdaptiveAvgPool3d((1, 1, 1)),
-            nn.Flatten(),
-            nn.Linear(512, num_classes, bias=True),
-        )
-
-    return model
+    def get_augmentations(self):
+        print("Creating data augmentations...")
+        # DINO-style augmentations
+        augmentation = [
+            transforms.RandomResizedCrop(224, scale=(0.1, 1)),
+            transforms.RandomHorizontalFlip(),
+            transforms.RandomApply([
+                transforms.ColorJitter(brightness=0.4, contrast=0.4, saturation=0.2, hue=0.1)
+            ], p=0.8),
+            transforms.RandomGrayscale(p=0.2),
+            transforms.GaussianBlur(3, sigma=(0.1, 2.0)), # Gaussian blur as in DINO paper
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]) # Normalization values for ImageNet
+        ]
+        return transforms.Compose(augmentation)
 
 def DINOModel(args):
+    print("Creating DINO model and processor...")
     model = DINO(args)
-    processor = AutoImageProcessor.from_pretrained("facebook/timesformer-base-finetuned-k400")
-    return model, processor
-
