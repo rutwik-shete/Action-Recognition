@@ -84,3 +84,4 @@ class DINO(nn.Module):
 def DINOModel(args):
     print("Creating DINO model and processor...")
     model = DINO(args)
+    return model
