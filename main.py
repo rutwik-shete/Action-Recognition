@@ -126,7 +126,7 @@ def main():
     
     if args.model == "dino":
         dummy_input = torch.randn(
-            args.train_batch_size * args.block_size, 3, 224, 224
+            args.train_batch_size, 3, args.block_size, 224, 224
         ).to(device)  # Update the dummy input shape
         summary(model, input_size=dummy_input.shape)  # Remove the indexing
     else:
