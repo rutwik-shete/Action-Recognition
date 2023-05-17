@@ -6,6 +6,8 @@ from torchvision.transforms import transforms
 from Constants import CATEGORY_INDEX
 from data_manager import BlockFrameDataset
 import timm
+from torchvision.transforms.functional import to_pil_image
+
 
 
 def trunc_normal_(tensor, mean=0., std=1., a=-2., b=2.):
@@ -27,7 +29,7 @@ class DINO(nn.Module):
         self.augmentations = self.get_augmentations()
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        B, T, C, H, W = x.size()
+        B, C, T, H, W = x.size()
 
         # Reshape the input tensor
         x = x.permute(0, 2, 1, 3, 4)  # Permute dimensions to (B, T, C, H, W)
@@ -51,6 +53,7 @@ class DINO(nn.Module):
         return teacher_output, student_output
 
 
+
     def create_vit_model(self):
         print("Creating Vision Transformer model...")
         model = timm.create_model('vit_base_patch16_224', pretrained=True)
@@ -70,7 +73,6 @@ class DINO(nn.Module):
 
     def get_augmentations(self):
         print("Creating data augmentations...")
-        # DINO-style augmentations
         augmentation = [
             transforms.RandomResizedCrop(224, scale=(0.1, 1)),
             transforms.RandomHorizontalFlip(),
@@ -79,15 +81,21 @@ class DINO(nn.Module):
             ], p=0.8),
             transforms.RandomGrayscale(p=0.2),
             transforms.GaussianBlur(3, sigma=(0.1, 2.0)),  # Gaussian blur as in DINO paper
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])  # Normalization values for ImageNet
         ]
 
         if self.args.model == "dino":
-            augmentation.insert(0, transforms.Lambda(lambda x: x.permute(1, 0, 2, 3, 4).contiguous().view(-1, *x.shape[2:])))  # Reshape and permute tensor
+            augmentation.insert(0, transforms.ToPILImage())  # Convert tensor to PIL Image
 
+        augmentation.extend([
+            transforms.ToTensor(),
+            transforms.Normalize(
+                mean=[0.485, 0.456, 0.406],
+                std=[0.229, 0.224, 0.225]
+            )  # Normalization values for ImageNet
+        ])
 
         return transforms.Compose(augmentation)
+
 
 
 def DINOModel(args):
