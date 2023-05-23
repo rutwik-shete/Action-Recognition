@@ -29,6 +29,7 @@ import torch.nn.functional as F
 from torchinfo import summary
 
 from model import getModel
+from GetTop5Accu import getTop5Accu
 
 
 # global variables
@@ -125,7 +126,7 @@ def main():
 
     model,processor = getModel(args)
     
-    summary(model, input_size=(args.train_batch_size, args.block_size, 3, 224, 224))
+    # summary(model, input_size=(args.train_batch_size, args.block_size, 3, 224, 224))
     
     model.to(device)
 
@@ -146,8 +147,9 @@ def main():
 
     for epoch in range(startEpochs,args.epochs):
         print("\nStarting Epoch",str(epoch+1),"......")
-        avg_train_acc,avg_train_loss = train(model,processor,train_loader,val_loader,optimizer,device,epoch+1)
-        print("\nTraining Epoch",str(epoch+1),"Average Loss :",avg_train_loss,"Average Accuracy :",avg_train_acc)
+        avg_train_acc,top5_acc_avg,avg_train_loss = train(model,processor,train_loader,val_loader,optimizer,device,epoch+1)
+        print("\nTraining Epoch",str(epoch+1),"\nAverage Loss :",avg_train_loss,"\nAverage Accuracy :",avg_train_acc)
+        print("Top5 Average Accuracy : ",top5_acc_avg,"\n")
 
         if(epoch+1) % args.eval_freq == 0:
             print("Saving Checkpoint .......")
@@ -163,7 +165,7 @@ def main():
             )
 
             print("\nValidation Started ....................")
-            avg_val_acc,avg_val_loss = test(model,val_loader,device,is_test=False)
+            avg_val_acc,top5_acc_avg,avg_val_loss = test(model,val_loader,device,is_test=False)
             print("Validation Ended ....................\n")
 
             wandb.log({
@@ -171,6 +173,7 @@ def main():
                 "TrainLoss":avg_train_loss,
                 "ValidationAccuracy":avg_val_acc,
                 "ValidationLoss":avg_val_loss,
+                "Top5Accuracy":top5_acc_avg,
                 "Epoch":epoch
             })
 
@@ -189,6 +192,7 @@ def main():
 def train(model, processor, data_loader, val_loader, optimizer, device, epoch):
     loss_meter = AverageMeter()
     acc_meter = AverageMeter()
+    top5_acc_meter = AverageMeter()
     correct = 0
     model.train()
 
@@ -210,23 +214,28 @@ def train(model, processor, data_loader, val_loader, optimizer, device, epoch):
         correct += correct_this
         acc_this = correct_this / label.shape[0] * 100.0
 
+        top5_correct_this = getTop5Accu(logits,label)
+        top5_acc_this = top5_correct_this / label.shape[0] * 100.0
+
         loss_this = F.cross_entropy(logits, label)
         optimizer.zero_grad()
         loss_this.backward()
         optimizer.step()
         
+        top5_acc_meter.update(top5_acc_this,label.shape[0])
         acc_meter.update(acc_this, label.shape[0])
         loss_meter.update(loss_this.item(), label.shape[0])
         
         # print("Epoch {:02d} Batch [{:02d}/{:02d}] --> Avg Loss : {:f}".format(epoch,batch_idx+1,len(data_loader),loss_meter.avg))
     
-    return acc_meter.avg, loss_meter.avg
+    return acc_meter.avg,top5_acc_meter.avg,loss_meter.avg
     
 
 
 def test(model, data_loader, device, is_test=True):
     loss_meter = AverageMeter()
     acc_meter = AverageMeter()
+    top5_acc_meter = AverageMeter()
     correct = 0
     model.eval()
     bar = progressbar.ProgressBar(maxval=len(data_loader)).start()
@@ -256,8 +265,13 @@ def test(model, data_loader, device, is_test=True):
         correct += correct_this
         acc_this = correct_this / label.shape[0] * 100.0
 
+        
+        top5_correct_this = getTop5Accu(logits,label)
+        top5_acc_this = top5_correct_this / label.shape[0] * 100.0
+
         acc_meter.update(acc_this, label.shape[0])
         loss_meter.update(loss_this.item(), label.shape[0])
+        top5_acc_meter.update(top5_acc_this,label.shape[0])
         
         logits = logits.cpu().numpy()
         for i in range(logits.shape[0]):
@@ -277,14 +291,14 @@ def test(model, data_loader, device, is_test=True):
     #print("{:s} Batch [{:02d}/{:02d}] --> Batch Accuracy : {:.2f}%".format("Test" if is_test else "Validation",batch_idx+1,len(data_loader),acc_this))
 
     if is_test:
-        print('\nTest: Average loss: {:.4f}, Accuracy: {}/{} ({:.2f}%)\n'.format(
-        loss_meter.avg, correct, len(data_loader.dataset), acc_meter.avg))
+        print('\nTest: Average loss: {:.4f}, \nAccuracy: ({:.2f}%) \nTop5 Accuracy: {}'.format(
+        loss_meter.avg, acc_meter.avg,top5_acc_meter.avg))
     
     else:
-        print('\nValidation: Average loss: {:.4f}, Accuracy: {}/{} ({:.2f}%)\n'.format(
-        loss_meter.avg, correct, len(data_loader.dataset), acc_meter.avg))
+        print('\nValidation: Average loss: {:.4f}, \nAccuracy: ({:.2f}%) \nTop5 Accuracy: {}'.format(
+        loss_meter.avg, acc_meter.avg,top5_acc_meter.avg))
 
-    return acc_meter.avg,loss_meter.avg
+    return acc_meter.avg,top5_acc_meter.avg,loss_meter.avg
 
 if __name__ == "__main__":
     start_time = datetime.now()
