@@ -1,36 +1,34 @@
 from transformers import AutoImageProcessor, TimesformerForVideoClassification
 from torch import nn
 from Constants import CATEGORY_INDEX
+import torch
+import types
 
 
-class VideoMAE(nn.Module):
-    def __init__(self):
-        super(VideoMAE, self).__init__()
-        self.processor = AutoImageProcessor.from_pretrained("facebook/timesformer-base-finetuned-k400")
-        self.backbone, self.processor = timeSFormer400()
-        self.encoder = nn.Identity()  # Example encoder layer
-        self.decoder = nn.Identity()  # Example decoder layer
-        # self.classifier = nn.Linear(768, len(CATEGORY_INDEX), bias=True)
-
-    def forward(self, x):
-        # processed_x = self.processor(x)
-        processed_x = x
-        video_features = self.backbone(processed_x)
-        video_features = video_features.logits
-        encoded_features = self.encoder(video_features)
-        reconstructed_video = self.decoder(encoded_features)
-        output = reconstructed_video
-
-        return output
-
-def timeSFormer400():
+def VideoMAE():
     processor = AutoImageProcessor.from_pretrained("facebook/timesformer-base-finetuned-k400")
     model = TimesformerForVideoClassification.from_pretrained("facebook/timesformer-base-finetuned-k400")
-    for param in model.parameters():
-        param.requires_grad = False
+
+    for params in model.parameters():
+        params.requires_grad = False
+
     model.classifier = nn.Linear(768, len(CATEGORY_INDEX), bias=True)
 
-    return model, processor
+    # Define the mask tensor
+    total_frames = 8  # Total number of frames in the input
+    num_masked_frames = int(total_frames * 0.85)  # 80% of the frames to mask
+    mask_tensor = torch.cat(
+        [torch.zeros((1, num_masked_frames), dtype=torch.float32), torch.ones((1, total_frames - num_masked_frames), dtype=torch.float32)],
+        dim=1
+    )
 
-def video_mae_model(args):
-    return VideoMAE(), None
+    # Apply the mask to the input frames
+    def forward(self, frames):
+        masked_frames = frames * mask_tensor
+        processed_frames = processor(masked_frames)
+        return processed_frames
+
+    # Monkey-patch the processor's forward function with the modified version
+    processor.forward = types.MethodType(forward, processor)
+
+    return model, processor

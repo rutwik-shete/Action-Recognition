@@ -12,9 +12,7 @@ from models.Resnet18_2D import Resnet18_2D_With_Attention
 from models.Resnet18_3D import Resnet18_3D_With_Attention
 from models.Timesformer600 import timeSformer600
 from models.Resnet18_2D import Resnet18_2D_With_Attention
-from models.dino import DINOModel
-
-
+from models.VideoMAE import VideoMAE
 
 def timeSformer400():
 
@@ -27,7 +25,7 @@ def timeSformer400():
     model.classifier = nn.Linear(768,len(CATEGORY_INDEX),bias=True)
 
     return model,processor
-    
+
 def getModel(args):
     print("Proceeding with Model:", args.model)
     if(args.model == "timesformer400"):
@@ -36,7 +34,11 @@ def getModel(args):
         return timeSformer600()
     elif(args.model == "2Dresnet18"):
         return Resnet18_2D_With_Attention()
-    elif(args.model == "resnet18WithAttention"):
+    elif(args.model == "resnet18WithAttention" or args.model == "resnet182Plus1"):
         return Resnet18_3D_With_Attention(args)
-    elif args.model == "dino":
-        return DINOModel(args)
+    elif(args.model == "videomae"):
+        return VideoMAE()
+    
+  
+
+

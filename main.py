@@ -11,6 +11,7 @@ from datetime import datetime
 import progressbar
 import pandas as pd
 from utils.iotools import (check_isfile,mkdir_if_missing)
+from torchinfo import summary
 
 
 import numpy as np
@@ -122,28 +123,13 @@ def main():
     test_loader = DataLoader(test_dataset,shuffle=True,batch_size=args.test_batch_size,num_workers=1, pin_memory=True,drop_last=True)
 
     # Procuring the pretrained model
-    model,processor = getModel(args)
-    
-    # Procuring the pretrained model
+
     model, processor = getModel(args)
 
-    if args.model == "dino":
-        dummy_input = torch.randn(
-            args.train_batch_size * args.block_size, 3, 224, 224
-        ).to(device)  # Update the dummy input shape
-        dummy_input = dummy_input.view(
-            args.train_batch_size, args.block_size, 3, 224, 224
-        )  # Reshape the dummy input tensor
-        summary(model, input_size=dummy_input.shape[1:])  # Remove the indexing
-    else:
-        summary(model, input_size=(args.train_batch_size, args.block_size, 3, 224, 224))
-
-
     
-
-    #summary(model, input_size=(args.train_batch_size, args.block_size, 3, 224, 224))
-
-    model.to(device)  
+    summary(model, input_size=(args.train_batch_size, args.block_size, 3, 224, 224))
+    
+    model.to(device)
 
     wandb.watch(model, log="all")
     
@@ -210,43 +196,33 @@ def train(model, processor, data_loader, val_loader, optimizer, device, epoch):
 
     bar = progressbar.ProgressBar(maxval=len(data_loader)).start()
     for batch_idx, data in enumerate(data_loader):
-        bar.update(batch_idx + 1)
+        bar.update(batch_idx+1)
         frame, label = data[0], data[1]
         frame = torch.squeeze(frame)
         frame, label = frame.to(device), label.to(device)
+        output = model(frame)
 
-         
+        if(args.model == "timesformer400" or args.model == "timesformer600" or args.model =="videomae"):
+            logits = output.logits
+        elif(args.model == "resnet18WithAttention" or args.model == "2Dresnet18" or args.model == "resnet182Plus1"):
+            logits = output
 
-        # Forward pass
-        if args.model == "dino":
-            # In DINO, the same batch is passed through the student and teacher networks
-            teacher_output, student_output = model(frame)
+        pred = logits.argmax(dim=1, keepdim=True)
+        correct_this = pred.eq(label.view_as(pred)).sum().item()
+        correct += correct_this
+        acc_this = correct_this / label.shape[0] * 100.0
 
-            # The loss is calculated between the student and teacher outputs
-            loss_this = F.cross_entropy(student_output, teacher_output.detach())
-        else:
-            output = model(frame)
-
-            if args.model == "timesformer400" or args.model == "timesformer600":
-                logits = output.logits
-            elif args.model == "resnet18WithAttention" or args.model == "2Dresnet18" or args.model == "resnet50":
-                logits = output
-
-            pred = logits.argmax(dim=1, keepdim=True)
-            correct_this = pred.eq(label.view_as(pred)).sum().item()
-            correct += correct_this
-            acc_this = correct_this / label.shape[0] * 100.0
-
-            loss_this = F.cross_entropy(logits, label)
+        loss_this = F.cross_entropy(logits, label)
         optimizer.zero_grad()
         loss_this.backward()
         optimizer.step()
-
+        
         acc_meter.update(acc_this, label.shape[0])
         loss_meter.update(loss_this.item(), label.shape[0])
-
+        
+        # print("Epoch {:02d} Batch [{:02d}/{:02d}] --> Avg Loss : {:f}".format(epoch,batch_idx+1,len(data_loader),loss_meter.avg))
+    
     return acc_meter.avg, loss_meter.avg
-
     
 
 
@@ -268,19 +244,13 @@ def test(model, data_loader, device, is_test=True):
         frame, label = data[0], data[1]
         frame = torch.squeeze(frame)
         frame, label = frame.to(device), label.to(device)
-        
         with torch.no_grad():
-            if args.model == "dino":
-                # In DINO, we only care about the student's output during testing
-                _, output = model(frame)
-            else:
-                output = model(frame)
+            output = model(frame)
         
-        if(args.model == "timesformer400" or args.model == "timesformer600"):
+        if(args.model == "timesformer400" or args.model == "timesformer600" or args.model =="videomae"):
             logits = output.logits
-        elif(args.model == "resnet18WithAttention" or args.model == "2Dresnet18" or args.model == "resnet50"):
+        elif(args.model == "resnet18WithAttention" or args.model == "2Dresnet18" or args.model == "resnet182Plus1"):
             logits = output
-        
 
         loss_this = F.cross_entropy(logits, label)
         pred = logits.argmax(dim=1, keepdim=True)
