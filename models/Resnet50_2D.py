@@ -77,22 +77,25 @@ class CustomModel(nn.Module):
     def __init__(self):
         super().__init__()
 
-        self.model = models.resnet18(weights='IMAGENET1K_V1')
-        self.batchSize = 16
+        self.model = models.resnet50(weights='IMAGENET1K_V1')
+        self.batchSize = 8
 
         for params in self.model.parameters():
             params.requires_grad = False
 
         self.model.conv1.weight.requires_grad = True
 
+        self.model.avgpool =  nn.AdaptiveAvgPool2d((1, 1))
+
         self.model.fc = nn.Flatten()
 
         self.midLayer = nn.Sequential(
-            PositionalEncoding(d_model=512,batchSize=self.batchSize),
-            nn.TransformerEncoderLayer(d_model=512,nhead=16,dim_feedforward = 512,activation = 'gelu'),
+            PositionalEncoding(d_model=2048,batchSize=self.batchSize),
+            nn.TransformerEncoderLayer(d_model=2048,nhead=16,dim_feedforward = 2048,activation = 'gelu',dropout=0.3),
             nn.Flatten(),
             # BatchFlattening(),
-            nn.Linear(8704,len(CATEGORY_INDEX),bias=True)
+            # 18432 34816
+            nn.Linear(18432,len(CATEGORY_INDEX),bias=True)
         )
 
     def forward(self, x: Tensor) -> Tensor:
@@ -111,7 +114,7 @@ class CustomModel(nn.Module):
 
         return x
 
-def Resnet18_2D_With_Attention():
+def Resnet50_2D_With_Attention():
 
     
     model = CustomModel()

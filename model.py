@@ -12,6 +12,7 @@ from models.Resnet18_2D import Resnet18_2D_With_Attention
 from models.Resnet18_3D import Resnet18_3D_With_Attention
 from models.Timesformer600 import timeSformer600
 from models.Resnet18_2D import Resnet18_2D_With_Attention
+from models.Resnet50_2D import Resnet50_2D_With_Attention
 
 def timeSformer400():
 
@@ -35,3 +36,5 @@ def getModel(args):
         return Resnet18_2D_With_Attention()
     elif(args.model == "resnet18WithAttention"):
         return Resnet18_3D_With_Attention(args)
+    elif(args.model == "2Dresnet50"):
+        return Resnet50_2D_With_Attention()

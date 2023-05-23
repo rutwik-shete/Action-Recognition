@@ -89,5 +89,10 @@ def argument_parser():
         
     parser.add_argument(
         "--run_name", type=str, required=True, help="run name for W&B"
-    ) 
+    )
+
+    parser.add_argument(
+        "--test_on_epoch", type=int,default=0, help="run test on epoch number"
+    )
+
     return parser

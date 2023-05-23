@@ -39,8 +39,12 @@ def get_latest_ckpt(path, reverse=False, suffix='.ckpt'):
         file = next(f for f in files)
     return file
 
-def resume_from_checkpoint(ckpt_dir, model, optimizer=None):
-    ckpt_file = get_latest_ckpt(ckpt_dir)
+def resume_from_checkpoint(ckpt_dir, model, optimizer=None, test_on_epoch=None):
+    if test_on_epoch == None:
+        ckpt_file = get_latest_ckpt(ckpt_dir)
+    else:
+        ckpt_file = osp.join(ckpt_dir,"model.pth.tar-"+str(test_on_epoch)+".ckpt")
+
     if ckpt_file is None :
         return 0
     print(f'Loading checkpoint from "{ckpt_file}"')
