@@ -54,6 +54,7 @@ wandb.init(
     "epochs": args.epochs,
     },
     name=args.run_name,
+    dir="/mnt/fast/nobackup/users/rs01960/AML"
 )
 
 # Main Function Code
@@ -136,57 +137,66 @@ def main():
     optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=1e-4)
     # scheduler = MultiStepLR(optimizer, milestones=[5,10], gamma=0.1)
 
-    if args.resume and osp.isdir(args.resume):
-        startEpochs = resume_from_checkpoint(
-            args.resume, model, optimizer=optimizer
-        )
+    if args.test_on_epoch :
+        print("Loading Model ..........")
+
+        resume_from_checkpoint(args.resume, model, optimizer=optimizer,test_on_epoch = args.test_on_epoch)
+
+        print("\nTest Started ....................")
+        test(model,test_loader,device)
+        print("Test Ended ....................\n")
+
     else:
-        startEpochs = 0
+        if args.resume and osp.isdir(args.resume):
+                startEpochs = resume_from_checkpoint(
+                    args.resume, model, optimizer=optimizer
+                )
+        else:
+            startEpochs = 0
 
-    ranklogger = RankLogger(args.source_names, args.target_names)
+        ranklogger = RankLogger(args.source_names, args.target_names)
 
-    for epoch in range(startEpochs,args.epochs):
-        print("\nStarting Epoch",str(epoch+1),"......")
-        avg_train_acc,top5_acc_avg,avg_train_loss = train(model,processor,train_loader,val_loader,optimizer,device,epoch+1)
-        print("\nTraining Epoch",str(epoch+1),"\nAverage Loss :",avg_train_loss,"\nAverage Accuracy :",avg_train_acc)
-        print("Top5 Average Accuracy : ",top5_acc_avg,"\n")
+        for epoch in range(startEpochs,args.epochs):
+            print("\nStarting Epoch",str(epoch+1),"......")
+            avg_train_acc,top5_acc_avg,avg_train_loss = train(model,processor,train_loader,val_loader,optimizer,device,epoch+1)
+            print("\nTraining Epoch",str(epoch+1),"\nAverage Loss :",avg_train_loss,"\nAverage Accuracy :",avg_train_acc)
+            print("Top5 Average Accuracy : ",top5_acc_avg,"\n")
 
-        if(epoch+1) % args.eval_freq == 0:
-            print("Saving Checkpoint .......")
+            if(epoch+1) % args.eval_freq == 0:
+                print("Saving Checkpoint .......")
 
-            save_checkpoint(
-                {
-                    "state_dict": model.state_dict(),
-                    "Avg_Train_Loss": avg_train_loss,
-                    "epoch": epoch+1 ,
-                    "optimizer": optimizer.state_dict(),
-                },
-                args.save_dir,
-            )
+                save_checkpoint(
+                    {
+                        "state_dict": model.state_dict(),
+                        "Avg_Train_Loss": avg_train_loss,
+                        "epoch": epoch+1 ,
+                        "optimizer": optimizer.state_dict(),
+                    },
+                    args.save_dir,
+                )
 
-            print("\nValidation Started ....................")
-            avg_val_acc,top5_acc_avg,avg_val_loss = test(model,val_loader,device,is_test=False)
-            print("Validation Ended ....................\n")
+                print("\nValidation Started ....................")
+                avg_val_acc,top5_acc_avg,avg_val_loss = test(model,val_loader,device,is_test=False)
+                print("Validation Ended ....................\n")
 
-            wandb.log({
-                "TrainAccuracy":avg_train_acc,
-                "TrainLoss":avg_train_loss,
-                "ValidationAccuracy":avg_val_acc,
-                "ValidationLoss":avg_val_loss,
-                "Top5Accuracy":top5_acc_avg,
-                "Epoch":epoch
-            })
+                wandb.log({
+                    "TrainAccuracy":avg_train_acc,
+                    "TrainLoss":avg_train_loss,
+                    "ValidationAccuracy":avg_val_acc,
+                    "ValidationLoss":avg_val_loss,
+                    "Top5Accuracy":top5_acc_avg,
+                    "Epoch":epoch
+                })
 
-            for name in args.target_names:
-                ranklogger.write(name, epoch + 1, avg_val_acc)
-                
-        # scheduler.step()
-        
-    print("\nTest Started ....................")
-    test(model,test_loader,device)
-    print("Test Ended ....................\n")
-
-    ranklogger.show_summary()
+                for name in args.target_names:
+                    ranklogger.write(name, epoch + 1, avg_val_acc)
+                    
+            # scheduler.step()
+            
+        print("\nTest Started ....................")
+        test(model,test_loader,device)
+        print("Test Ended ....................\n")
+        ranklogger.show_summary()
 
 
 def train(model, processor, data_loader, val_loader, optimizer, device, epoch):
@@ -206,10 +216,11 @@ def train(model, processor, data_loader, val_loader, optimizer, device, epoch):
 
         if(args.model == "timesformer400" or args.model == "timesformer600"):
             logits = output.logits
-        elif(args.model == "resnet18WithAttention" or args.model == "2Dresnet18" or args.model == "resnet182Plus1"):
+        elif(args.model == "resnet18WithAttention" or args.model == "2Dresnet18" or args.model == "resnet182Plus1" or args.model == "2Dresnet50"):
             logits = output
 
         pred = logits.argmax(dim=1, keepdim=True)
+
         correct_this = pred.eq(label.view_as(pred)).sum().item()
         correct += correct_this
         acc_this = correct_this / label.shape[0] * 100.0
@@ -256,7 +267,7 @@ def test(model, data_loader, device, is_test=True):
         
         if(args.model == "timesformer400" or args.model == "timesformer600"):
             logits = output.logits
-        elif(args.model == "resnet18WithAttention" or args.model == "2Dresnet18" or args.model == "resnet182Plus1"):
+        elif(args.model == "resnet18WithAttention" or args.model == "2Dresnet18" or args.model == "resnet182Plus1" or args.model == "2Dresnet50"):
             logits = output
 
         loss_this = F.cross_entropy(logits, label)
