@@ -7,25 +7,13 @@ from Constants import CATEGORY_INDEX
 import torch.nn.init as init
 
 
-def timeSformer400():
-    processor = AutoImageProcessor.from_pretrained("facebook/timesformer-base-finetuned-k400")
-    model = TimesformerForVideoClassification.from_pretrained("facebook/timesformer-base-finetuned-k400")
-
-    for params in model.parameters():
-        params.requires_grad = False
-
-    model.classifier = nn.Linear(768, len(CATEGORY_INDEX), bias=True)
-
-    return model, processor
-
-
 def VideoMAE(dropout_rate=0.5):
     processor = AutoImageProcessor.from_pretrained("facebook/timesformer-base-finetuned-k400")
     model = TimesformerForVideoClassification.from_pretrained("facebook/timesformer-base-finetuned-k400")
 
     num_features_before_fcnn = model.classifier.in_features  # obtain the number of input features to the classifier
 
-    # Replace the old classifier with the new one that includes dropout and layer normalization.
+    # Replace the old classifier with the new one that includes dropout and batch normalization.
     model.classifier = nn.Sequential(
         nn.Linear(num_features_before_fcnn, len(CATEGORY_INDEX), bias=True),  # Final classifier
         nn.LayerNorm(len(CATEGORY_INDEX))  # Layer normalization
@@ -57,6 +45,10 @@ def VideoMAE(dropout_rate=0.5):
     for param in model.parameters():
         param.requires_grad = False
 
+    # Enable gradient calculation for the new classifier
+    for param in model.classifier.parameters():
+        param.requires_grad = True
+
     # Data augmentation transformations
     data_transforms = Compose([
         Resize((224, 224)),  # Resize the frame to a fixed size of 224
@@ -73,3 +65,7 @@ def VideoMAE(dropout_rate=0.5):
     processor.transform = data_transforms
 
     return model, processor
+
+
+
+
