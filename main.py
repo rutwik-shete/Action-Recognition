@@ -11,6 +11,7 @@ from datetime import datetime
 import progressbar
 import pandas as pd
 from utils.iotools import (check_isfile,mkdir_if_missing)
+from torchinfo import summary
 
 
 import numpy as np
@@ -125,7 +126,8 @@ def main():
 
     # Procuring the pretrained model
 
-    model,processor = getModel(args)
+    model, processor = getModel(args)
+
     
     # summary(model, input_size=(args.train_batch_size, args.block_size, 3, 224, 224))
     
@@ -214,7 +216,7 @@ def train(model, processor, data_loader, val_loader, optimizer, device, epoch):
         frame, label = frame.to(device), label.to(device)
         output = model(frame)
 
-        if(args.model == "timesformer400" or args.model == "timesformer600"):
+        if(args.model == "timesformer400" or args.model == "timesformer600" or args.model =="videomae"):
             logits = output.logits
         elif(args.model == "resnet18WithAttention" or args.model == "2Dresnet18" or args.model == "resnet182Plus1" or args.model == "2Dresnet50"):
             logits = output
@@ -265,7 +267,7 @@ def test(model, data_loader, device, is_test=True):
         with torch.no_grad():
             output = model(frame)
         
-        if(args.model == "timesformer400" or args.model == "timesformer600"):
+        if(args.model == "timesformer400" or args.model == "timesformer600" or args.model =="videomae"):
             logits = output.logits
         elif(args.model == "resnet18WithAttention" or args.model == "2Dresnet18" or args.model == "resnet182Plus1" or args.model == "2Dresnet50"):
             logits = output
