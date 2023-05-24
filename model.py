@@ -19,7 +19,7 @@ def timeSformer400():
     model = TimesformerForVideoClassification.from_pretrained("facebook/timesformer-base-finetuned-k400")
 
     for params in model.parameters():
-        params.requires_grad = True
+        params.requires_grad = False
 
     model.classifier = nn.Linear(768,len(CATEGORY_INDEX),bias=True)
 
