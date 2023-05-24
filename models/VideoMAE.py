@@ -7,29 +7,41 @@ from Constants import CATEGORY_INDEX
 import torch.nn.init as init
 
 
+def timeSformer400():
+    processor = AutoImageProcessor.from_pretrained("facebook/timesformer-base-finetuned-k400")
+    model = TimesformerForVideoClassification.from_pretrained("facebook/timesformer-base-finetuned-k400")
+
+    for params in model.parameters():
+        params.requires_grad = False
+
+    model.classifier = nn.Linear(768, len(CATEGORY_INDEX), bias=True)
+
+    return model, processor
+
+
 def VideoMAE(dropout_rate=0.5):
     processor = AutoImageProcessor.from_pretrained("facebook/timesformer-base-finetuned-k400")
     model = TimesformerForVideoClassification.from_pretrained("facebook/timesformer-base-finetuned-k400")
 
     num_features_before_fcnn = model.classifier.in_features  # obtain the number of input features to the classifier
 
-    # Replace the old classifier with the new one that includes dropout and batch normalization.
+    # Replace the old classifier with the new one that includes dropout and layer normalization.
     model.classifier = nn.Sequential(
         nn.Linear(num_features_before_fcnn, len(CATEGORY_INDEX), bias=True),  # Final classifier
         nn.LayerNorm(len(CATEGORY_INDEX))  # Layer normalization
     )
 
-    # Freeze the parameters of the pretrained model
-    for param in model.parameters():
-        param.requires_grad = False
-
-    # Enable gradient calculation for the new classifier
-    for param in model.classifier.parameters():
-        param.requires_grad = True
+    # Add a 13D Convolutional layer
+    model.features = nn.Sequential(
+        nn.Conv3d(3, 64, kernel_size=(1, 3, 3), stride=(1, 1, 1), padding=(0, 1, 1)),  # 13D Convolution
+        nn.BatchNorm3d(64),
+        nn.ReLU(inplace=True),
+        nn.MaxPool3d(kernel_size=(1, 2, 2), stride=(1, 2, 2))  # Temporal pooling
+    )
 
     # Xavier initialization of weights
     def weights_init(m):
-        if isinstance(m, nn.Linear):
+        if isinstance(m, nn.Linear) or isinstance(m, nn.Conv3d):
             init.xavier_uniform_(m.weight)
             if m.bias is not None:
                 init.zeros_(m.bias)
@@ -40,6 +52,10 @@ def VideoMAE(dropout_rate=0.5):
     mask_percentage = 0.9  # Set the desired mask percentage
     mask = torch.rand(model.classifier[0].weight.shape) < mask_percentage
     model.classifier[0].weight.data *= mask.float()
+
+    # Freeze the parameters of the pretrained model
+    for param in model.parameters():
+        param.requires_grad = False
 
     # Data augmentation transformations
     data_transforms = Compose([
@@ -57,7 +73,3 @@ def VideoMAE(dropout_rate=0.5):
     processor.transform = data_transforms
 
     return model, processor
-
-
-
-
