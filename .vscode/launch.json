@@ -21,7 +21,7 @@
             "justMyCode": false,
             "args": [
                 "--model",
-                "timesformer400",
+                "timesformer400", // can add timesformer400,timesformer600, resnet18WithAttention, resnet182Plus1, 2Dresnet50, 2Dresnet18
                 "--home_path",
                 "/Users/rutwikshete/Desktop/Codeing/Surrey/SurreyAssignment",
                 "--dataset_path",
@@ -33,11 +33,11 @@
                 "--block_size",
                 "8",
                 "--train_batch_size",
-                "20",
+                "8", // Only batch size 8 works on the 2Dresnet18 and 2Dresnet50 as they are not dynamic to change
                 "--val_batch_size",
-                "20",
+                "8", // Only batch size 8 works on the 2Dresnet18 and 2Dresnet50 as they are not dynamic to change
                 "--test_batch_size",
-                "20",
+                "8", // Only batch size 8 works on the 2Dresnet18 and 2Dresnet50 as they are not dynamic to change
                 "--lr",
                 "0.0003",
                 "--epochs",

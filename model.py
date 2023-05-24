@@ -23,6 +23,8 @@ def timeSformer400():
 
     model.classifier = nn.Linear(768,len(CATEGORY_INDEX),bias=True)
 
+    return model,processor
+
 
 def getModel(args):
     print("Proceeding with Model:", args.model)

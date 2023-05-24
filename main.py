@@ -129,7 +129,7 @@ def main():
     model, processor = getModel(args)
 
     
-    # summary(model, input_size=(args.train_batch_size, args.block_size, 3, 224, 224))
+    summary(model, input_size=(args.train_batch_size, args.block_size, 3, 224, 224))
     
     model.to(device)
 

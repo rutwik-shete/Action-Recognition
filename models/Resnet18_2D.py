@@ -78,7 +78,7 @@ class CustomModel(nn.Module):
         super().__init__()
 
         self.model = models.resnet18(weights='IMAGENET1K_V1')
-        self.batchSize = 16
+        self.batchSize = 8
 
         for params in self.model.parameters():
             params.requires_grad = False
@@ -92,7 +92,7 @@ class CustomModel(nn.Module):
             nn.TransformerEncoderLayer(d_model=512,nhead=16,dim_feedforward = 512,activation = 'gelu'),
             nn.Flatten(),
             # BatchFlattening(),
-            nn.Linear(8704,len(CATEGORY_INDEX),bias=True)
+            nn.Linear(4608,len(CATEGORY_INDEX),bias=True)
         )
 
     def forward(self, x: Tensor) -> Tensor:
