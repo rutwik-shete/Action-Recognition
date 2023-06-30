@@ -1,0 +1,100 @@
+
+JobBatchName = "ActionRecog"
+
+# Executable Python Path
+# executable    = /bin/sh
+executable    = /user/HS402/rs01960/miniconda3/envs/pytorch/bin/python3
+
+# Whcih Image Info
+universe     = docker
+docker_image = nvidia/cuda:10.1-cudnn7-runtime-ubuntu16.04
+
+# Event, out and error logs
+log    = c$(cluster).p$(process).log
+output = c$(cluster).p$(process).out
+error  = c$(cluster).p$(process).error
+
+# File Transfer, Input, Output
+should_transfer_files = YES
+
+# Mount the project spaces containing the Anaconda environments and the code
+# Uncomment this environment line if you're not running on /mnt/fast
+# environment = "mount=$ENV(PWD)"
+
+# Requirements for the Job (see NvidiaDocker/Example09)
+requirements =  (CUDAGlobalMemoryMb > 4500) && \
+                (CUDAGlobalMemoryMb <  17000) && \
+#               (HasStornext) && \
+                (CUDACapability > 2.0)
+
+# Resources Needed
+request_GPUs   = 1
+
+# this needs to be specified for the AI@Surrey cluster if requesting a GPU
++GPUMem        = 10000
+request_CPUs   = 1
+request_memory = 10G
+
+#This job will complete in less than 1 hour
++JobRunTime = 1
+
+#This job can checkpoint
++CanCheckpoint = True
+
+# ------------------------------------
+# Request for guaranteed run time. 0 means job is happy to checkpoint and move at any time.
+# This lets Condor remove our job ASAP if a machine needs rebooting. Useful when we can checkpoint and restore
+# Measured in seconds, so it can be changed to match the time it takes for an epoch to run
+MaxJobRetirementTime = 0
+
+# -----------------------------------
+# Queue commands. We can use variables and flags to launch our command with multiple options (as you would from the command line)
+
+# run the code from the previous Directory
+
+# arguments = /mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/train.sh
+
+environment="LD_LIBRARY_PATH=/user/HS402/rs01960/libstdc:$LD_LIBRARY_PATH"
+
+model=2Dresnet50
+block_size=8
+epochs=30
+train_batch=8
+val_batch=8
+learning_rate=0.00001
+
+#Concatinated Name For the Folder where log will be saved
+save_log_name=$(model)_$(block_size)_$(epochs)_$(train_batch)_$(val_batch)_$(learning_rate)_dropout_0.3_Input_nonlearnable_Top5Rank
+
+# Path To One Directory Before Project Directory "Action-Recognition" , this is where modified data will be created
+home_path=/mnt/fast/nobackup/users/rs01960/AML
+
+# Python main file path
+main_file_path=$(home_path)/Action-Recognition/main.py
+
+# Store Original Dataset in "home_path" 
+dataset_path=$(home_path)/HMDB_simp
+
+# Path where the logs and checkpoints will be saved , Added to git_ignore so that logs stay in your local
+ckp=$(home_path)/Action-Recognition/Logs/$(save_log_name)
+
+arguments = $(main_file_path) \
+--model $(model) \
+--home_path $(home_path) \
+--dataset_path $(dataset_path) \
+--resume $(ckp) \
+--save_dir $(ckp) \
+--block_size $(block_size) \
+--train_batch_size $(train_batch) \
+--val_batch_size $(val_batch) \
+--test_batch_size $(val_batch) \
+--lr $(learning_rate) \
+--epochs $(epochs) \
+--eval_freq 1 \
+--run_name Rutwik_$(save_log_name) \
+-t $(model) \
+-s $(model)
+# --test_on_epoch 28
+
+
+queue 1
