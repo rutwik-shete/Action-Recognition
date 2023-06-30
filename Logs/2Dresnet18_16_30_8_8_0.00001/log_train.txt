@@ -1,0 +1,711 @@
+Running with command line:  Namespace(attn_dim=64, block_size=16, dataset_path='/mnt/fast/nobackup/users/rs01960/AML/HMDB_simp', dropout=0.3, epochs=30, eval_freq=1, home_path='/mnt/fast/nobackup/users/rs01960/AML', input_learnable=False, lr=1e-05, model='2Dresnet18', resume='/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001', run_name='Rutwik_2Dresnet18_16_30_8_8_0.00001', save_dir='/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001', skip_attention=False, source_names=['2Dresnet18'], target_names=['2Dresnet18'], test_batch_size=8, train_batch_size=8, val_batch_size=8)
+Using Cuda GPU
+Creating Custom Data If Needed
+The dataset with 16 frames exists
+Initializing Dataloader
+Proceeding with Model: 2Dresnet18
+===============================================================================================
+Layer (type:depth-idx)                        Output Shape              Param #
+===============================================================================================
+CustomModel                                   [8, 25]                   --
+├─ResNet: 1-1                                 [128, 512]                --
+│    └─Conv2d: 2-1                            [128, 64, 112, 112]       9,408
+│    └─BatchNorm2d: 2-2                       [128, 64, 112, 112]       (128)
+│    └─ReLU: 2-3                              [128, 64, 112, 112]       --
+│    └─MaxPool2d: 2-4                         [128, 64, 56, 56]         --
+│    └─Sequential: 2-5                        [128, 64, 56, 56]         --
+│    │    └─BasicBlock: 3-1                   [128, 64, 56, 56]         (73,984)
+│    │    └─BasicBlock: 3-2                   [128, 64, 56, 56]         (73,984)
+│    └─Sequential: 2-6                        [128, 128, 28, 28]        --
+│    │    └─BasicBlock: 3-3                   [128, 128, 28, 28]        (230,144)
+│    │    └─BasicBlock: 3-4                   [128, 128, 28, 28]        (295,424)
+│    └─Sequential: 2-7                        [128, 256, 14, 14]        --
+│    │    └─BasicBlock: 3-5                   [128, 256, 14, 14]        (919,040)
+│    │    └─BasicBlock: 3-6                   [128, 256, 14, 14]        (1,180,672)
+│    └─Sequential: 2-8                        [128, 512, 7, 7]          --
+│    │    └─BasicBlock: 3-7                   [128, 512, 7, 7]          (3,673,088)
+│    │    └─BasicBlock: 3-8                   [128, 512, 7, 7]          (4,720,640)
+│    └─Sequential: 2-9                        [128, 512]                --
+│    │    └─AdaptiveAvgPool2d: 3-9            [128, 512, 1, 1]          --
+│    │    └─Flatten: 3-10                     [128, 512]                --
+│    └─Identity: 2-10                         [128, 512]                --
+├─Sequential: 1-2                             [8, 25]                   --
+│    └─PositionalEncoding: 2-11               [8, 17, 512]              512
+│    └─TransformerEncoderLayer: 2-12          [8, 17, 512]              --
+│    │    └─MultiheadAttention: 3-11          [8, 17, 512]              1,050,624
+│    │    └─Dropout: 3-12                     [8, 17, 512]              --
+│    │    └─LayerNorm: 3-13                   [8, 17, 512]              1,024
+│    │    └─Linear: 3-14                      [8, 17, 512]              262,656
+│    │    └─Dropout: 3-15                     [8, 17, 512]              --
+│    │    └─Linear: 3-16                      [8, 17, 512]              262,656
+│    │    └─Dropout: 3-17                     [8, 17, 512]              --
+│    │    └─LayerNorm: 3-18                   [8, 17, 512]              1,024
+│    └─Flatten: 2-13                          [8, 8704]                 --
+│    └─Linear: 2-14                           [8, 25]                   217,625
+===============================================================================================
+Total params: 12,972,633
+Trainable params: 1,805,529
+Non-trainable params: 11,167,104
+Total mult-adds (G): 232.14
+===============================================================================================
+Input size (MB): 77.07
+Forward/backward pass size (MB): 5088.87
+Params size (MB): 47.69
+Estimated Total Size (MB): 5213.63
+===============================================================================================
+
+Starting Epoch 1 ......
+
+Training Epoch 1 Average Loss : 2.423905575958391 Average Accuracy : 35.042317708333336
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001/model.pth.tar-01.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 1.7114, Accuracy: 408/756 (54.26%)
+
+Validation Ended ....................
+
+
+Starting Epoch 2 ......
+
+Training Epoch 2 Average Loss : 1.4247972922554861 Average Accuracy : 63.785807291666664
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001/model.pth.tar-02.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 1.2195, Accuracy: 509/756 (67.69%)
+
+Validation Ended ....................
+
+
+Starting Epoch 3 ......
+
+Training Epoch 3 Average Loss : 1.0351103908227135 Average Accuracy : 74.62565104166667
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001/model.pth.tar-03.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 1.0432, Accuracy: 529/756 (70.35%)
+
+Validation Ended ....................
+
+
+Starting Epoch 4 ......
+
+Training Epoch 4 Average Loss : 0.8422283565741964 Average Accuracy : 79.37825520833333
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001/model.pth.tar-04.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.9317, Accuracy: 549/756 (73.01%)
+
+Validation Ended ....................
+
+
+Starting Epoch 5 ......
+
+Training Epoch 5 Average Loss : 0.7043369079959424 Average Accuracy : 83.18684895833333
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001/model.pth.tar-05.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.8596, Accuracy: 565/756 (75.13%)
+
+Validation Ended ....................
+
+
+Starting Epoch 6 ......
+
+Training Epoch 6 Average Loss : 0.6166903863292342 Average Accuracy : 84.814453125
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001/model.pth.tar-06.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.8406, Accuracy: 561/756 (74.60%)
+
+Validation Ended ....................
+
+
+Starting Epoch 7 ......
+
+Training Epoch 7 Average Loss : 0.5390291054694293 Average Accuracy : 86.97916666666667
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001/model.pth.tar-07.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.8050, Accuracy: 569/756 (75.66%)
+
+Validation Ended ....................
+
+
+Starting Epoch 8 ......
+
+Training Epoch 8 Average Loss : 0.47467530637125793 Average Accuracy : 88.623046875
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001/model.pth.tar-08.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.8171, Accuracy: 578/756 (76.86%)
+
+Validation Ended ....................
+
+
+Starting Epoch 9 ......
+
+Training Epoch 9 Average Loss : 0.4297052305822338 Average Accuracy : 89.43684895833333
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001/model.pth.tar-09.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.7976, Accuracy: 575/756 (76.46%)
+
+Validation Ended ....................
+
+
+Starting Epoch 10 ......
+
+Training Epoch 10 Average Loss : 0.3754230433308597 Average Accuracy : 91.53645833333333
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001/model.pth.tar-10.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.8079, Accuracy: 565/756 (75.13%)
+
+Validation Ended ....................
+
+
+Starting Epoch 11 ......
+
+Training Epoch 11 Average Loss : 0.35443427809514105 Average Accuracy : 91.32486979166667
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001/model.pth.tar-11.ckpt"
+
+Validation Started ....................
+Running with command line:  Namespace(attn_dim=64, block_size=16, dataset_path='/mnt/fast/nobackup/users/rs01960/AML/HMDB_simp', dropout=0.3, epochs=30, eval_freq=1, home_path='/mnt/fast/nobackup/users/rs01960/AML', input_learnable=False, lr=1e-05, model='2Dresnet18', resume='/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001', run_name='Rutwik_2Dresnet18_16_30_8_8_0.00001', save_dir='/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001', skip_attention=False, source_names=['2Dresnet18'], target_names=['2Dresnet18'], test_batch_size=8, train_batch_size=8, val_batch_size=8)
+Using Cuda GPU
+Creating Custom Data If Needed
+The dataset with 16 frames exists
+Initializing Dataloader
+Proceeding with Model: 2Dresnet18
+===============================================================================================
+Layer (type:depth-idx)                        Output Shape              Param #
+===============================================================================================
+CustomModel                                   [8, 25]                   --
+├─ResNet: 1-1                                 [128, 512]                --
+│    └─Conv2d: 2-1                            [128, 64, 112, 112]       9,408
+│    └─BatchNorm2d: 2-2                       [128, 64, 112, 112]       (128)
+│    └─ReLU: 2-3                              [128, 64, 112, 112]       --
+│    └─MaxPool2d: 2-4                         [128, 64, 56, 56]         --
+│    └─Sequential: 2-5                        [128, 64, 56, 56]         --
+│    │    └─BasicBlock: 3-1                   [128, 64, 56, 56]         (73,984)
+│    │    └─BasicBlock: 3-2                   [128, 64, 56, 56]         (73,984)
+│    └─Sequential: 2-6                        [128, 128, 28, 28]        --
+│    │    └─BasicBlock: 3-3                   [128, 128, 28, 28]        (230,144)
+│    │    └─BasicBlock: 3-4                   [128, 128, 28, 28]        (295,424)
+│    └─Sequential: 2-7                        [128, 256, 14, 14]        --
+│    │    └─BasicBlock: 3-5                   [128, 256, 14, 14]        (919,040)
+│    │    └─BasicBlock: 3-6                   [128, 256, 14, 14]        (1,180,672)
+│    └─Sequential: 2-8                        [128, 512, 7, 7]          --
+│    │    └─BasicBlock: 3-7                   [128, 512, 7, 7]          (3,673,088)
+│    │    └─BasicBlock: 3-8                   [128, 512, 7, 7]          (4,720,640)
+│    └─Sequential: 2-9                        [128, 512]                --
+│    │    └─AdaptiveAvgPool2d: 3-9            [128, 512, 1, 1]          --
+│    │    └─Flatten: 3-10                     [128, 512]                --
+│    └─Identity: 2-10                         [128, 512]                --
+├─Sequential: 1-2                             [8, 25]                   --
+│    └─PositionalEncoding: 2-11               [8, 17, 512]              512
+│    └─TransformerEncoderLayer: 2-12          [8, 17, 512]              --
+│    │    └─MultiheadAttention: 3-11          [8, 17, 512]              1,050,624
+│    │    └─Dropout: 3-12                     [8, 17, 512]              --
+│    │    └─LayerNorm: 3-13                   [8, 17, 512]              1,024
+│    │    └─Linear: 3-14                      [8, 17, 512]              262,656
+│    │    └─Dropout: 3-15                     [8, 17, 512]              --
+│    │    └─Linear: 3-16                      [8, 17, 512]              262,656
+│    │    └─Dropout: 3-17                     [8, 17, 512]              --
+│    │    └─LayerNorm: 3-18                   [8, 17, 512]              1,024
+│    └─Flatten: 2-13                          [8, 8704]                 --
+│    └─Linear: 2-14                           [8, 25]                   217,625
+===============================================================================================
+Total params: 12,972,633
+Trainable params: 1,805,529
+Non-trainable params: 11,167,104
+Total mult-adds (G): 232.14
+===============================================================================================
+Input size (MB): 77.07
+Forward/backward pass size (MB): 5088.87
+Params size (MB): 47.69
+Estimated Total Size (MB): 5213.63
+===============================================================================================
+Loading checkpoint from "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001/model.pth.tar-11.ckpt"
+Loaded model weights
+Loaded optimizer
+** previous epoch = 11	 previous avg loss = 0.35443427809514105
+
+Starting Epoch 12 ......
+
+Training Epoch 12 Average Loss : 0.320259174957755 Average Accuracy : 92.236328125
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001/model.pth.tar-12.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.8360, Accuracy: 560/756 (74.47%)
+
+Validation Ended ....................
+
+
+Starting Epoch 13 ......
+
+Training Epoch 13 Average Loss : 0.29304850196058396 Average Accuracy : 93.13151041666667
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001/model.pth.tar-13.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.7934, Accuracy: 576/756 (76.60%)
+
+Validation Ended ....................
+
+
+Starting Epoch 14 ......
+
+Training Epoch 14 Average Loss : 0.272419299316122 Average Accuracy : 93.408203125
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001/model.pth.tar-14.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.7468, Accuracy: 586/756 (77.93%)
+
+Validation Ended ....................
+
+
+Starting Epoch 15 ......
+
+Training Epoch 15 Average Loss : 0.24935057867211677 Average Accuracy : 94.25455729166667
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001/model.pth.tar-15.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.8024, Accuracy: 567/756 (75.40%)
+
+Validation Ended ....................
+
+
+Starting Epoch 16 ......
+
+Training Epoch 16 Average Loss : 0.22753538091213463 Average Accuracy : 94.66145833333333
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001/model.pth.tar-16.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.7784, Accuracy: 577/756 (76.73%)
+
+Validation Ended ....................
+
+
+Starting Epoch 17 ......
+
+Training Epoch 17 Average Loss : 0.21630920316965785 Average Accuracy : 95.08463541666667
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001/model.pth.tar-17.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.8315, Accuracy: 580/756 (77.13%)
+
+Validation Ended ....................
+
+
+Starting Epoch 18 ......
+
+Training Epoch 18 Average Loss : 0.19260425208873735 Average Accuracy : 95.91471354166667
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001/model.pth.tar-18.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.7881, Accuracy: 583/756 (77.53%)
+
+Validation Ended ....................
+
+
+Starting Epoch 19 ......
+
+Training Epoch 19 Average Loss : 0.18562811779702315 Average Accuracy : 95.703125
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001/model.pth.tar-19.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.8118, Accuracy: 574/756 (76.33%)
+
+Validation Ended ....................
+
+
+Starting Epoch 20 ......
+
+Training Epoch 20 Average Loss : 0.17584763971535722 Average Accuracy : 95.947265625
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001/model.pth.tar-20.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.7657, Accuracy: 572/756 (76.06%)
+
+Validation Ended ....................
+
+
+Starting Epoch 21 ......
+
+Training Epoch 21 Average Loss : 0.16054667027553174 Average Accuracy : 96.35416666666667
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001/model.pth.tar-21.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.7942, Accuracy: 579/756 (76.99%)
+
+Validation Ended ....................
+
+
+Starting Epoch 22 ......
+Running with command line:  Namespace(attn_dim=64, block_size=16, dataset_path='/mnt/fast/nobackup/users/rs01960/AML/HMDB_simp', dropout=0.3, epochs=30, eval_freq=1, home_path='/mnt/fast/nobackup/users/rs01960/AML', input_learnable=False, lr=1e-05, model='2Dresnet18', resume='/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001', run_name='Rutwik_2Dresnet18_16_30_8_8_0.00001', save_dir='/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001', skip_attention=False, source_names=['2Dresnet18'], target_names=['2Dresnet18'], test_batch_size=8, train_batch_size=8, val_batch_size=8)
+Using Cuda GPU
+Creating Custom Data If Needed
+The dataset with 16 frames exists
+Initializing Dataloader
+Proceeding with Model: 2Dresnet18
+===============================================================================================
+Layer (type:depth-idx)                        Output Shape              Param #
+===============================================================================================
+CustomModel                                   [8, 25]                   --
+├─ResNet: 1-1                                 [128, 512]                --
+│    └─Conv2d: 2-1                            [128, 64, 112, 112]       9,408
+│    └─BatchNorm2d: 2-2                       [128, 64, 112, 112]       (128)
+│    └─ReLU: 2-3                              [128, 64, 112, 112]       --
+│    └─MaxPool2d: 2-4                         [128, 64, 56, 56]         --
+│    └─Sequential: 2-5                        [128, 64, 56, 56]         --
+│    │    └─BasicBlock: 3-1                   [128, 64, 56, 56]         (73,984)
+│    │    └─BasicBlock: 3-2                   [128, 64, 56, 56]         (73,984)
+│    └─Sequential: 2-6                        [128, 128, 28, 28]        --
+│    │    └─BasicBlock: 3-3                   [128, 128, 28, 28]        (230,144)
+│    │    └─BasicBlock: 3-4                   [128, 128, 28, 28]        (295,424)
+│    └─Sequential: 2-7                        [128, 256, 14, 14]        --
+│    │    └─BasicBlock: 3-5                   [128, 256, 14, 14]        (919,040)
+│    │    └─BasicBlock: 3-6                   [128, 256, 14, 14]        (1,180,672)
+│    └─Sequential: 2-8                        [128, 512, 7, 7]          --
+│    │    └─BasicBlock: 3-7                   [128, 512, 7, 7]          (3,673,088)
+│    │    └─BasicBlock: 3-8                   [128, 512, 7, 7]          (4,720,640)
+│    └─Sequential: 2-9                        [128, 512]                --
+│    │    └─AdaptiveAvgPool2d: 3-9            [128, 512, 1, 1]          --
+│    │    └─Flatten: 3-10                     [128, 512]                --
+│    └─Identity: 2-10                         [128, 512]                --
+├─Sequential: 1-2                             [8, 25]                   --
+│    └─PositionalEncoding: 2-11               [8, 17, 512]              512
+│    └─TransformerEncoderLayer: 2-12          [8, 17, 512]              --
+│    │    └─MultiheadAttention: 3-11          [8, 17, 512]              1,050,624
+│    │    └─Dropout: 3-12                     [8, 17, 512]              --
+│    │    └─LayerNorm: 3-13                   [8, 17, 512]              1,024
+│    │    └─Linear: 3-14                      [8, 17, 512]              262,656
+│    │    └─Dropout: 3-15                     [8, 17, 512]              --
+│    │    └─Linear: 3-16                      [8, 17, 512]              262,656
+│    │    └─Dropout: 3-17                     [8, 17, 512]              --
+│    │    └─LayerNorm: 3-18                   [8, 17, 512]              1,024
+│    └─Flatten: 2-13                          [8, 8704]                 --
+│    └─Linear: 2-14                           [8, 25]                   217,625
+===============================================================================================
+Total params: 12,972,633
+Trainable params: 1,805,529
+Non-trainable params: 11,167,104
+Total mult-adds (G): 232.14
+===============================================================================================
+Input size (MB): 77.07
+Forward/backward pass size (MB): 5088.87
+Params size (MB): 47.69
+Estimated Total Size (MB): 5213.63
+===============================================================================================
+Loading checkpoint from "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001/model.pth.tar-21.ckpt"
+Loaded model weights
+Loaded optimizer
+** previous epoch = 21	 previous avg loss = 0.16054667027553174
+
+Starting Epoch 22 ......
+
+Training Epoch 22 Average Loss : 0.1535750266721152 Average Accuracy : 96.59830729166667
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001/model.pth.tar-22.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.7783, Accuracy: 587/756 (78.06%)
+
+Validation Ended ....................
+
+
+Starting Epoch 23 ......
+
+Training Epoch 23 Average Loss : 0.13535775663967797 Average Accuracy : 97.10286458333333
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001/model.pth.tar-23.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.8109, Accuracy: 577/756 (76.73%)
+
+Validation Ended ....................
+
+
+Starting Epoch 24 ......
+
+Training Epoch 24 Average Loss : 0.1314503415802998 Average Accuracy : 97.13541666666667
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001/model.pth.tar-24.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.8734, Accuracy: 575/756 (76.46%)
+
+Validation Ended ....................
+
+
+Starting Epoch 25 ......
+
+Training Epoch 25 Average Loss : 0.11580262872303138 Average Accuracy : 97.68880208333333
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001/model.pth.tar-25.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.8197, Accuracy: 586/756 (77.93%)
+
+Validation Ended ....................
+
+
+Starting Epoch 26 ......
+
+Training Epoch 26 Average Loss : 0.11375208684057725 Average Accuracy : 97.705078125
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001/model.pth.tar-26.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.8684, Accuracy: 579/756 (76.99%)
+
+Validation Ended ....................
+
+
+Starting Epoch 27 ......
+
+Training Epoch 27 Average Loss : 0.10683464691616489 Average Accuracy : 97.98177083333333
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001/model.pth.tar-27.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.8528, Accuracy: 575/756 (76.46%)
+
+Validation Ended ....................
+
+
+Starting Epoch 28 ......
+
+Training Epoch 28 Average Loss : 0.09944561378021415 Average Accuracy : 98.20963541666667
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001/model.pth.tar-28.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.8322, Accuracy: 585/756 (77.79%)
+
+Validation Ended ....................
+
+
+Starting Epoch 29 ......
+
+Training Epoch 29 Average Loss : 0.09580669491242588 Average Accuracy : 98.03059895833333
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001/model.pth.tar-29.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.9013, Accuracy: 579/756 (76.99%)
+
+Validation Ended ....................
+
+
+Starting Epoch 30 ......
+
+Training Epoch 30 Average Loss : 0.09516430292781781 Average Accuracy : 98.046875
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001/model.pth.tar-30.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.9418, Accuracy: 564/756 (75.00%)
+
+Validation Ended ....................
+
+
+Test Started ....................
+
+Test: Average loss: 1.2424, Accuracy: 504/711 (71.59%)
+
+Test Ended ....................
+
+=> Show performance summary
+2Dresnet18 (source)
+- epoch 22	 Accuracy 78.06%
+- epoch 23	 Accuracy 76.73%
+- epoch 24	 Accuracy 76.46%
+- epoch 25	 Accuracy 77.93%
+- epoch 26	 Accuracy 76.99%
+- epoch 27	 Accuracy 76.46%
+- epoch 28	 Accuracy 77.79%
+- epoch 29	 Accuracy 76.99%
+- epoch 30	 Accuracy 75.00%
+Runtime : 0:58:19.461636
+Running with command line:  Namespace(attn_dim=64, block_size=16, dataset_path='/mnt/fast/nobackup/users/rs01960/AML/HMDB_simp', dropout=0.3, epochs=30, eval_freq=1, home_path='/mnt/fast/nobackup/users/rs01960/AML', input_learnable=False, lr=1e-05, model='2Dresnet18', resume='/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001', run_name='Rutwik_2Dresnet18_16_30_8_8_0.00001', save_dir='/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001', skip_attention=False, source_names=['2Dresnet18'], target_names=['2Dresnet18'], test_batch_size=8, test_on_epoch=22, train_batch_size=8, val_batch_size=8)
+Using Cuda GPU
+Creating Custom Data If Needed
+The dataset with 16 frames exists
+Initializing Dataloader
+Proceeding with Model: 2Dresnet18
+===============================================================================================
+Layer (type:depth-idx)                        Output Shape              Param #
+===============================================================================================
+CustomModel                                   [8, 25]                   --
+├─ResNet: 1-1                                 [128, 512]                --
+│    └─Conv2d: 2-1                            [128, 64, 112, 112]       9,408
+│    └─BatchNorm2d: 2-2                       [128, 64, 112, 112]       (128)
+│    └─ReLU: 2-3                              [128, 64, 112, 112]       --
+│    └─MaxPool2d: 2-4                         [128, 64, 56, 56]         --
+│    └─Sequential: 2-5                        [128, 64, 56, 56]         --
+│    │    └─BasicBlock: 3-1                   [128, 64, 56, 56]         (73,984)
+│    │    └─BasicBlock: 3-2                   [128, 64, 56, 56]         (73,984)
+│    └─Sequential: 2-6                        [128, 128, 28, 28]        --
+│    │    └─BasicBlock: 3-3                   [128, 128, 28, 28]        (230,144)
+│    │    └─BasicBlock: 3-4                   [128, 128, 28, 28]        (295,424)
+│    └─Sequential: 2-7                        [128, 256, 14, 14]        --
+│    │    └─BasicBlock: 3-5                   [128, 256, 14, 14]        (919,040)
+│    │    └─BasicBlock: 3-6                   [128, 256, 14, 14]        (1,180,672)
+│    └─Sequential: 2-8                        [128, 512, 7, 7]          --
+│    │    └─BasicBlock: 3-7                   [128, 512, 7, 7]          (3,673,088)
+│    │    └─BasicBlock: 3-8                   [128, 512, 7, 7]          (4,720,640)
+│    └─AdaptiveAvgPool2d: 2-9                 [128, 512, 1, 1]          --
+│    └─Flatten: 2-10                          [128, 512]                --
+├─Sequential: 1-2                             [8, 25]                   --
+│    └─PositionalEncoding: 2-11               [8, 17, 512]              512
+│    └─TransformerEncoderLayer: 2-12          [8, 17, 512]              --
+│    │    └─MultiheadAttention: 3-9           [8, 17, 512]              1,050,624
+│    │    └─Dropout: 3-10                     [8, 17, 512]              --
+│    │    └─LayerNorm: 3-11                   [8, 17, 512]              1,024
+│    │    └─Linear: 3-12                      [8, 17, 512]              262,656
+│    │    └─Dropout: 3-13                     [8, 17, 512]              --
+│    │    └─Linear: 3-14                      [8, 17, 512]              262,656
+│    │    └─Dropout: 3-15                     [8, 17, 512]              --
+│    │    └─LayerNorm: 3-16                   [8, 17, 512]              1,024
+│    └─Flatten: 2-13                          [8, 8704]                 --
+│    └─Linear: 2-14                           [8, 25]                   217,625
+===============================================================================================
+Total params: 12,972,633
+Trainable params: 1,805,529
+Non-trainable params: 11,167,104
+Total mult-adds (G): 232.14
+===============================================================================================
+Input size (MB): 77.07
+Forward/backward pass size (MB): 5088.87
+Params size (MB): 47.69
+Estimated Total Size (MB): 5213.63
+===============================================================================================
+Loading Model ..........
+Loading checkpoint from "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001/model.pth.tar-22.ckpt"
+Loaded model weights
+Loaded optimizer
+** previous epoch = 22	 previous avg loss = 0.1535750266721152
+
+Test Started ....................
+
+Test: Average loss: 1.1472, Accuracy: 511/711 (72.59%)
+
+Test Ended ....................
+
+Runtime : 0:00:59.714052
+Running with command line:  Namespace(attn_dim=64, block_size=16, dataset_path='/mnt/fast/nobackup/users/rs01960/AML/HMDB_simp', dropout=0.3, epochs=30, eval_freq=1, home_path='/mnt/fast/nobackup/users/rs01960/AML', input_learnable=False, lr=1e-05, model='2Dresnet18', resume='/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001', run_name='Rutwik_2Dresnet18_16_30_8_8_0.00001', save_dir='/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001', skip_attention=False, source_names=['2Dresnet18'], target_names=['2Dresnet18'], test_batch_size=8, test_on_epoch=28, train_batch_size=8, val_batch_size=8)
+Using Cuda GPU
+Creating Custom Data If Needed
+The dataset with 16 frames exists
+Initializing Dataloader
+Proceeding with Model: 2Dresnet18
+===============================================================================================
+Layer (type:depth-idx)                        Output Shape              Param #
+===============================================================================================
+CustomModel                                   [8, 25]                   --
+├─ResNet: 1-1                                 [128, 512]                --
+│    └─Conv2d: 2-1                            [128, 64, 112, 112]       9,408
+│    └─BatchNorm2d: 2-2                       [128, 64, 112, 112]       (128)
+│    └─ReLU: 2-3                              [128, 64, 112, 112]       --
+│    └─MaxPool2d: 2-4                         [128, 64, 56, 56]         --
+│    └─Sequential: 2-5                        [128, 64, 56, 56]         --
+│    │    └─BasicBlock: 3-1                   [128, 64, 56, 56]         (73,984)
+│    │    └─BasicBlock: 3-2                   [128, 64, 56, 56]         (73,984)
+│    └─Sequential: 2-6                        [128, 128, 28, 28]        --
+│    │    └─BasicBlock: 3-3                   [128, 128, 28, 28]        (230,144)
+│    │    └─BasicBlock: 3-4                   [128, 128, 28, 28]        (295,424)
+│    └─Sequential: 2-7                        [128, 256, 14, 14]        --
+│    │    └─BasicBlock: 3-5                   [128, 256, 14, 14]        (919,040)
+│    │    └─BasicBlock: 3-6                   [128, 256, 14, 14]        (1,180,672)
+│    └─Sequential: 2-8                        [128, 512, 7, 7]          --
+│    │    └─BasicBlock: 3-7                   [128, 512, 7, 7]          (3,673,088)
+│    │    └─BasicBlock: 3-8                   [128, 512, 7, 7]          (4,720,640)
+│    └─AdaptiveAvgPool2d: 2-9                 [128, 512, 1, 1]          --
+│    └─Flatten: 2-10                          [128, 512]                --
+├─Sequential: 1-2                             [8, 25]                   --
+│    └─PositionalEncoding: 2-11               [8, 17, 512]              512
+│    └─TransformerEncoderLayer: 2-12          [8, 17, 512]              --
+│    │    └─MultiheadAttention: 3-9           [8, 17, 512]              1,050,624
+│    │    └─Dropout: 3-10                     [8, 17, 512]              --
+│    │    └─LayerNorm: 3-11                   [8, 17, 512]              1,024
+│    │    └─Linear: 3-12                      [8, 17, 512]              262,656
+│    │    └─Dropout: 3-13                     [8, 17, 512]              --
+│    │    └─Linear: 3-14                      [8, 17, 512]              262,656
+│    │    └─Dropout: 3-15                     [8, 17, 512]              --
+│    │    └─LayerNorm: 3-16                   [8, 17, 512]              1,024
+│    └─Flatten: 2-13                          [8, 8704]                 --
+│    └─Linear: 2-14                           [8, 25]                   217,625
+===============================================================================================
+Total params: 12,972,633
+Trainable params: 1,805,529
+Non-trainable params: 11,167,104
+Total mult-adds (G): 232.14
+===============================================================================================
+Input size (MB): 77.07
+Forward/backward pass size (MB): 5088.87
+Params size (MB): 47.69
+Estimated Total Size (MB): 5213.63
+===============================================================================================
+Loading Model ..........
+Loading checkpoint from "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_16_30_8_8_0.00001/model.pth.tar-28.ckpt"
+Loaded model weights
+Loaded optimizer
+** previous epoch = 28	 previous avg loss = 0.09944561378021415
+
+Test Started ....................
+
+Test: Average loss: 1.1608, Accuracy: 507/711 (72.02%)
+
+Test Ended ....................
+
+Runtime : 0:00:59.113239

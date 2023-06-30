@@ -1,0 +1,460 @@
+Running with command line:  Namespace(attn_dim=64, block_size=16, dataset_path='/mnt/fast/nobackup/users/rs01960/AML/HMDB_simp', dropout=0.3, epochs=30, eval_freq=1, home_path='/mnt/fast/nobackup/users/rs01960/AML', lr=0.0003, model='timesformer400', resume='/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/timesformer400_16_30_20_20_0.0003', run_name='Rutwik_timesformer400_16_30_20_20_0.0003', save_dir='/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/timesformer400_16_30_20_20_0.0003', skip_attention=False, source_names=['timesformer400'], target_names=['timesformer400'], test_batch_size=20, train_batch_size=20, val_batch_size=20)
+Using Cuda GPU
+Creating Custom Data If Needed
+The dataset with 16 frames exists
+Initializing Dataloader
+Proceeding with Model: timesformer400
+===================================================================================================================
+Layer (type:depth-idx)                                            Output Shape              Param #
+===================================================================================================================
+TimesformerForVideoClassification                                 [20, 25]                  --
+├─TimesformerModel: 1-1                                           [20, 3137, 768]           --
+│    └─TimesformerEmbeddings: 2-1                                 [20, 3137, 768]           158,208
+│    │    └─TimesformerPatchEmbeddings: 3-1                       [320, 196, 768]           (590,592)
+│    │    └─Dropout: 3-2                                          [320, 197, 768]           --
+│    │    └─Dropout: 3-3                                          [3920, 16, 768]           --
+│    └─TimesformerEncoder: 2-2                                    [20, 3137, 768]           --
+│    │    └─ModuleList: 3-4                                       --                        (120,508,416)
+│    └─LayerNorm: 2-3                                             [20, 3137, 768]           (1,536)
+├─Linear: 1-2                                                     [20, 25]                  19,225
+===================================================================================================================
+Total params: 121,277,977
+Trainable params: 19,225
+Non-trainable params: 121,258,752
+Total mult-adds (G): 265.25
+===================================================================================================================
+Input size (MB): 192.68
+Forward/backward pass size (MB): 79450.40
+Params size (MB): 484.48
+Estimated Total Size (MB): 80127.56
+===================================================================================================================
+
+Starting Epoch 1 ......
+
+Training Epoch 1 Average Loss : 1.33064096272331 Average Accuracy : 68.9055130915596
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/timesformer400_16_30_20_20_0.0003/model.pth.tar-01.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.7564, Accuracy: 621/756 (82.14%)
+
+Validation Ended ....................
+
+
+Starting Epoch 2 ......
+
+Training Epoch 2 Average Loss : 0.4908561936082404 Average Accuracy : 89.52675231744999
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/timesformer400_16_30_20_20_0.0003/model.pth.tar-02.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.5771, Accuracy: 640/756 (84.66%)
+
+Validation Ended ....................
+
+
+Starting Epoch 3 ......
+
+Training Epoch 3 Average Loss : 0.32309466339787113 Average Accuracy : 93.31598633924216
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/timesformer400_16_30_20_20_0.0003/model.pth.tar-03.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.5104, Accuracy: 653/756 (86.38%)
+
+Validation Ended ....................
+
+
+Starting Epoch 4 ......
+
+Training Epoch 4 Average Loss : 0.2394416101542231 Average Accuracy : 95.13742071881607
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/timesformer400_16_30_20_20_0.0003/model.pth.tar-04.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.4681, Accuracy: 654/756 (86.51%)
+
+Validation Ended ....................
+
+
+Starting Epoch 5 ......
+
+Training Epoch 5 Average Loss : 0.18537964355966913 Average Accuracy : 96.69865018702228
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/timesformer400_16_30_20_20_0.0003/model.pth.tar-05.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.4503, Accuracy: 658/756 (87.04%)
+
+Validation Ended ....................
+
+
+Starting Epoch 6 ......
+
+Training Epoch 6 Average Loss : 0.1486927635724185 Average Accuracy : 97.70694421857212
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/timesformer400_16_30_20_20_0.0003/model.pth.tar-06.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.4406, Accuracy: 655/756 (86.64%)
+
+Validation Ended ....................
+
+
+Starting Epoch 7 ......
+
+Training Epoch 7 Average Loss : 0.12158220339124814 Average Accuracy : 98.25987965522849
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/timesformer400_16_30_20_20_0.0003/model.pth.tar-07.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.4292, Accuracy: 654/756 (86.51%)
+
+Validation Ended ....................
+
+
+Starting Epoch 8 ......
+
+Training Epoch 8 Average Loss : 0.10147429976274878 Average Accuracy : 98.82907789884534
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/timesformer400_16_30_20_20_0.0003/model.pth.tar-08.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.4305, Accuracy: 656/756 (86.77%)
+
+Validation Ended ....................
+
+
+Starting Epoch 9 ......
+
+Training Epoch 9 Average Loss : 0.08538100118876826 Average Accuracy : 99.21938526589689
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/timesformer400_16_30_20_20_0.0003/model.pth.tar-09.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.4175, Accuracy: 657/756 (86.90%)
+
+Validation Ended ....................
+
+
+Starting Epoch 10 ......
+
+Training Epoch 10 Average Loss : 0.07248800014175813 Average Accuracy : 99.34948772158074
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/timesformer400_16_30_20_20_0.0003/model.pth.tar-10.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.4205, Accuracy: 655/756 (86.64%)
+
+Validation Ended ....................
+
+
+Starting Epoch 11 ......
+
+Training Epoch 11 Average Loss : 0.06188285769917438 Average Accuracy : 99.54464140510652
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/timesformer400_16_30_20_20_0.0003/model.pth.tar-11.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.4083, Accuracy: 656/756 (86.77%)
+
+Validation Ended ....................
+
+
+Starting Epoch 12 ......
+
+Training Epoch 12 Average Loss : 0.0540803550115677 Average Accuracy : 99.65848105382989
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/timesformer400_16_30_20_20_0.0003/model.pth.tar-12.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.4175, Accuracy: 655/756 (86.64%)
+
+Validation Ended ....................
+
+
+Starting Epoch 13 ......
+
+Training Epoch 13 Average Loss : 0.04664022450520559 Average Accuracy : 99.72353228167182
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/timesformer400_16_30_20_20_0.0003/model.pth.tar-13.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.4141, Accuracy: 653/756 (86.38%)
+
+Validation Ended ....................
+
+
+Starting Epoch 14 ......
+
+Training Epoch 14 Average Loss : 0.040927459523542216 Average Accuracy : 99.72353228167182
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/timesformer400_16_30_20_20_0.0003/model.pth.tar-14.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.4107, Accuracy: 652/756 (86.24%)
+
+Validation Ended ....................
+
+
+Starting Epoch 15 ......
+
+Training Epoch 15 Average Loss : 0.035604958404761286 Average Accuracy : 99.82110912343471
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/timesformer400_16_30_20_20_0.0003/model.pth.tar-15.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.4186, Accuracy: 660/756 (87.30%)
+
+Validation Ended ....................
+
+
+Starting Epoch 16 ......
+
+Training Epoch 16 Average Loss : 0.03099277131695644 Average Accuracy : 99.8373719303952
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/timesformer400_16_30_20_20_0.0003/model.pth.tar-16.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.4145, Accuracy: 654/756 (86.51%)
+
+Validation Ended ....................
+
+
+Starting Epoch 17 ......
+
+Training Epoch 17 Average Loss : 0.027792975878193647 Average Accuracy : 99.86989754431615
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/timesformer400_16_30_20_20_0.0003/model.pth.tar-17.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.4151, Accuracy: 658/756 (87.04%)
+
+Validation Ended ....................
+
+
+Starting Epoch 18 ......
+
+Training Epoch 18 Average Loss : 0.024698502348381817 Average Accuracy : 99.86989754431615
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/timesformer400_16_30_20_20_0.0003/model.pth.tar-18.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.4181, Accuracy: 654/756 (86.51%)
+
+Validation Ended ....................
+
+
+Starting Epoch 19 ......
+
+Training Epoch 19 Average Loss : 0.02171866517243787 Average Accuracy : 99.90242315823711
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/timesformer400_16_30_20_20_0.0003/model.pth.tar-19.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.4182, Accuracy: 656/756 (86.77%)
+
+Validation Ended ....................
+
+
+Starting Epoch 20 ......
+
+Training Epoch 20 Average Loss : 0.01926726622273426 Average Accuracy : 99.90242315823711
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/timesformer400_16_30_20_20_0.0003/model.pth.tar-20.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.4199, Accuracy: 655/756 (86.64%)
+
+Validation Ended ....................
+
+
+Starting Epoch 21 ......
+
+Training Epoch 21 Average Loss : 0.01732259836144216 Average Accuracy : 99.93494877215808
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/timesformer400_16_30_20_20_0.0003/model.pth.tar-21.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.4109, Accuracy: 659/756 (87.17%)
+
+Validation Ended ....................
+
+
+Starting Epoch 22 ......
+
+Training Epoch 22 Average Loss : 0.015454170525384194 Average Accuracy : 99.9186859651976
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/timesformer400_16_30_20_20_0.0003/model.pth.tar-22.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.4198, Accuracy: 661/756 (87.43%)
+
+Validation Ended ....................
+
+
+Starting Epoch 23 ......
+
+Training Epoch 23 Average Loss : 0.013742730745603145 Average Accuracy : 99.93494877215808
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/timesformer400_16_30_20_20_0.0003/model.pth.tar-23.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.4220, Accuracy: 657/756 (86.90%)
+
+Validation Ended ....................
+
+
+Starting Epoch 24 ......
+
+Training Epoch 24 Average Loss : 0.01227758451538961 Average Accuracy : 99.93494877215808
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/timesformer400_16_30_20_20_0.0003/model.pth.tar-24.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.4304, Accuracy: 660/756 (87.30%)
+
+Validation Ended ....................
+
+
+Starting Epoch 25 ......
+
+Training Epoch 25 Average Loss : 0.011066718410035956 Average Accuracy : 100.0
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/timesformer400_16_30_20_20_0.0003/model.pth.tar-25.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.4237, Accuracy: 657/756 (86.90%)
+
+Validation Ended ....................
+
+
+Starting Epoch 26 ......
+
+Training Epoch 26 Average Loss : 0.009823443863083784 Average Accuracy : 99.95121157911855
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/timesformer400_16_30_20_20_0.0003/model.pth.tar-26.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.4277, Accuracy: 658/756 (87.04%)
+
+Validation Ended ....................
+
+
+Starting Epoch 27 ......
+
+Training Epoch 27 Average Loss : 0.008868869327649093 Average Accuracy : 99.98373719303952
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/timesformer400_16_30_20_20_0.0003/model.pth.tar-27.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.4335, Accuracy: 659/756 (87.17%)
+
+Validation Ended ....................
+
+
+Starting Epoch 28 ......
+
+Training Epoch 28 Average Loss : 0.00822208917253404 Average Accuracy : 99.96747438607903
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/timesformer400_16_30_20_20_0.0003/model.pth.tar-28.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.4277, Accuracy: 659/756 (87.17%)
+
+Validation Ended ....................
+
+
+Starting Epoch 29 ......
+
+Training Epoch 29 Average Loss : 0.007370673364552686 Average Accuracy : 99.96747438607903
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/timesformer400_16_30_20_20_0.0003/model.pth.tar-29.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.4441, Accuracy: 659/756 (87.17%)
+
+Validation Ended ....................
+
+
+Starting Epoch 30 ......
+
+Training Epoch 30 Average Loss : 0.006548354217517866 Average Accuracy : 99.96747438607903
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/timesformer400_16_30_20_20_0.0003/model.pth.tar-30.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 0.4470, Accuracy: 655/756 (86.64%)
+
+Validation Ended ....................
+
+
+Test Started ....................
+
+Test: Average loss: 0.8726, Accuracy: 566/711 (79.61%)
+
+Test Ended ....................
+
+=> Show performance summary
+timesformer400 (source)
+- epoch 1	 Accuracy 82.14%
+- epoch 2	 Accuracy 84.66%
+- epoch 3	 Accuracy 86.38%
+- epoch 4	 Accuracy 86.51%
+- epoch 5	 Accuracy 87.04%
+- epoch 6	 Accuracy 86.64%
+- epoch 7	 Accuracy 86.51%
+- epoch 8	 Accuracy 86.77%
+- epoch 9	 Accuracy 86.90%
+- epoch 10	 Accuracy 86.64%
+- epoch 11	 Accuracy 86.77%
+- epoch 12	 Accuracy 86.64%
+- epoch 13	 Accuracy 86.38%
+- epoch 14	 Accuracy 86.24%
+- epoch 15	 Accuracy 87.30%
+- epoch 16	 Accuracy 86.51%
+- epoch 17	 Accuracy 87.04%
+- epoch 18	 Accuracy 86.51%
+- epoch 19	 Accuracy 86.77%
+- epoch 20	 Accuracy 86.64%
+- epoch 21	 Accuracy 87.17%
+- epoch 22	 Accuracy 87.43%
+- epoch 23	 Accuracy 86.90%
+- epoch 24	 Accuracy 87.30%
+- epoch 25	 Accuracy 86.90%
+- epoch 26	 Accuracy 87.04%
+- epoch 27	 Accuracy 87.17%
+- epoch 28	 Accuracy 87.17%
+- epoch 29	 Accuracy 87.17%
+- epoch 30	 Accuracy 86.64%
+Runtime : 8:21:04.300923

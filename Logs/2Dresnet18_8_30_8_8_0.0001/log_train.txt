@@ -1,0 +1,485 @@
+Running with command line:  Namespace(attn_dim=64, block_size=8, dataset_path='/mnt/fast/nobackup/users/rs01960/AML/HMDB_simp', dropout=0.3, epochs=30, eval_freq=1, home_path='/mnt/fast/nobackup/users/rs01960/AML', input_learnable=False, lr=0.0001, model='2Dresnet18', resume='/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_8_30_8_8_0.0001', run_name='Rutwik_2Dresnet18_8_30_8_8_0.0001', save_dir='/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_8_30_8_8_0.0001', skip_attention=False, source_names=['2Dresnet18'], target_names=['2Dresnet18'], test_batch_size=8, train_batch_size=8, val_batch_size=8)
+Using Cuda GPU
+Creating Custom Data If Needed
+The dataset with  8 frames exists
+Initializing Dataloader
+Proceeding with Model: 2Dresnet18
+===============================================================================================
+Layer (type:depth-idx)                        Output Shape              Param #
+===============================================================================================
+CustomModel                                   [8, 25]                   --
+├─ResNet: 1-1                                 [64, 512]                 --
+│    └─Conv2d: 2-1                            [64, 64, 112, 112]        9,408
+│    └─BatchNorm2d: 2-2                       [64, 64, 112, 112]        (128)
+│    └─ReLU: 2-3                              [64, 64, 112, 112]        --
+│    └─MaxPool2d: 2-4                         [64, 64, 56, 56]          --
+│    └─Sequential: 2-5                        [64, 64, 56, 56]          --
+│    │    └─BasicBlock: 3-1                   [64, 64, 56, 56]          (73,984)
+│    │    └─BasicBlock: 3-2                   [64, 64, 56, 56]          (73,984)
+│    └─Sequential: 2-6                        [64, 128, 28, 28]         --
+│    │    └─BasicBlock: 3-3                   [64, 128, 28, 28]         (230,144)
+│    │    └─BasicBlock: 3-4                   [64, 128, 28, 28]         (295,424)
+│    └─Sequential: 2-7                        [64, 256, 14, 14]         --
+│    │    └─BasicBlock: 3-5                   [64, 256, 14, 14]         (919,040)
+│    │    └─BasicBlock: 3-6                   [64, 256, 14, 14]         (1,180,672)
+│    └─Sequential: 2-8                        [64, 512, 7, 7]           --
+│    │    └─BasicBlock: 3-7                   [64, 512, 7, 7]           (3,673,088)
+│    │    └─BasicBlock: 3-8                   [64, 512, 7, 7]           (4,720,640)
+│    └─Sequential: 2-9                        [64, 512]                 --
+│    │    └─AdaptiveAvgPool2d: 3-9            [64, 512, 1, 1]           --
+│    │    └─Flatten: 3-10                     [64, 512]                 --
+│    └─Identity: 2-10                         [64, 512]                 --
+├─Sequential: 1-2                             [8, 25]                   --
+│    └─PositionalEncoding: 2-11               [8, 9, 512]               512
+│    └─TransformerEncoderLayer: 2-12          [8, 9, 512]               --
+│    │    └─MultiheadAttention: 3-11          [8, 9, 512]               1,050,624
+│    │    └─Dropout: 3-12                     [8, 9, 512]               --
+│    │    └─LayerNorm: 3-13                   [8, 9, 512]               1,024
+│    │    └─Linear: 3-14                      [8, 9, 512]               262,656
+│    │    └─Dropout: 3-15                     [8, 9, 512]               --
+│    │    └─Linear: 3-16                      [8, 9, 512]               262,656
+│    │    └─Dropout: 3-17                     [8, 9, 512]               --
+│    │    └─LayerNorm: 3-18                   [8, 9, 512]               1,024
+│    └─Flatten: 2-13                          [8, 4608]                 --
+│    └─Linear: 2-14                           [8, 25]                   115,225
+===============================================================================================
+Total params: 12,870,233
+Trainable params: 1,703,129
+Non-trainable params: 11,167,104
+Total mult-adds (G): 116.07
+===============================================================================================
+Input size (MB): 38.54
+Forward/backward pass size (MB): 2544.50
+Params size (MB): 47.28
+Estimated Total Size (MB): 2630.31
+===============================================================================================
+
+Starting Epoch 1 ......
+
+Training Epoch 1 Average Loss : 1.072428482676443 Average Accuracy : 69.86032642812305
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_8_30_8_8_0.0001/model.pth.tar-01.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 1.0842, Accuracy: 1024/1493 (68.82%)
+
+Validation Ended ....................
+
+
+Starting Epoch 2 ......
+
+Training Epoch 2 Average Loss : 0.4196612912072927 Average Accuracy : 87.57846829880728
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_8_30_8_8_0.0001/model.pth.tar-02.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 1.1755, Accuracy: 1038/1493 (69.76%)
+
+Validation Ended ....................
+
+
+Starting Epoch 3 ......
+
+Training Epoch 3 Average Loss : 0.29655497172003764 Average Accuracy : 90.83490269930948
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_8_30_8_8_0.0001/model.pth.tar-03.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 1.3783, Accuracy: 1043/1493 (70.09%)
+
+Validation Ended ....................
+
+
+Starting Epoch 4 ......
+
+Training Epoch 4 Average Loss : 0.2043590928130881 Average Accuracy : 93.88731952291275
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_8_30_8_8_0.0001/model.pth.tar-04.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 1.2169, Accuracy: 1066/1493 (71.64%)
+
+Validation Ended ....................
+
+
+Starting Epoch 5 ......
+
+Training Epoch 5 Average Loss : 0.16707149005119165 Average Accuracy : 94.64061519146264
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_8_30_8_8_0.0001/model.pth.tar-05.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 1.3477, Accuracy: 1068/1493 (71.77%)
+
+Validation Ended ....................
+
+
+Starting Epoch 6 ......
+
+Training Epoch 6 Average Loss : 0.1311520206224971 Average Accuracy : 95.64500941619586
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_8_30_8_8_0.0001/model.pth.tar-06.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 1.5299, Accuracy: 1046/1493 (70.30%)
+
+Validation Ended ....................
+
+
+Starting Epoch 7 ......
+
+Training Epoch 7 Average Loss : 0.11757812419289579 Average Accuracy : 96.27275580665412
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_8_30_8_8_0.0001/model.pth.tar-07.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 1.4814, Accuracy: 1071/1493 (71.98%)
+
+Validation Ended ....................
+
+
+Starting Epoch 8 ......
+
+Training Epoch 8 Average Loss : 0.09660531702015562 Average Accuracy : 96.94758317639673
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_8_30_8_8_0.0001/model.pth.tar-08.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 1.6078, Accuracy: 1076/1493 (72.31%)
+
+Validation Ended ....................
+
+
+Starting Epoch 9 ......
+
+Training Epoch 9 Average Loss : 0.08635032437586372 Average Accuracy : 97.1594475831764
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_8_30_8_8_0.0001/model.pth.tar-09.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 1.7244, Accuracy: 1048/1493 (70.43%)
+
+Validation Ended ....................
+
+
+Starting Epoch 10 ......
+
+Training Epoch 10 Average Loss : 0.08366062311362094 Average Accuracy : 97.1594475831764
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_8_30_8_8_0.0001/model.pth.tar-10.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 2.0869, Accuracy: 1035/1493 (69.56%)
+
+Validation Ended ....................
+
+
+Starting Epoch 11 ......
+
+Training Epoch 11 Average Loss : 0.07711653174665767 Average Accuracy : 97.4654739485248
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_8_30_8_8_0.0001/model.pth.tar-11.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 1.9797, Accuracy: 1054/1493 (70.83%)
+
+Validation Ended ....................
+
+
+Starting Epoch 12 ......
+
+Training Epoch 12 Average Loss : 0.07909266067267164 Average Accuracy : 97.4654739485248
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_8_30_8_8_0.0001/model.pth.tar-12.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 1.7448, Accuracy: 1076/1493 (72.31%)
+
+Validation Ended ....................
+
+
+Starting Epoch 13 ......
+
+Training Epoch 13 Average Loss : 0.0573902265262856 Average Accuracy : 98.0225988700565
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_8_30_8_8_0.0001/model.pth.tar-13.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 1.6653, Accuracy: 1076/1493 (72.31%)
+
+Validation Ended ....................
+
+
+Starting Epoch 14 ......
+
+Training Epoch 14 Average Loss : 0.06258090663014756 Average Accuracy : 97.99121155053358
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_8_30_8_8_0.0001/model.pth.tar-14.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 1.6852, Accuracy: 1090/1493 (73.25%)
+
+Validation Ended ....................
+
+
+Starting Epoch 15 ......
+
+Training Epoch 15 Average Loss : 0.05503781071166895 Average Accuracy : 98.03829252981795
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_8_30_8_8_0.0001/model.pth.tar-15.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 2.2955, Accuracy: 1057/1493 (71.03%)
+
+Validation Ended ....................
+
+
+Starting Epoch 16 ......
+
+Training Epoch 16 Average Loss : 0.056471792754500434 Average Accuracy : 98.0225988700565
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_8_30_8_8_0.0001/model.pth.tar-16.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 1.8272, Accuracy: 1084/1493 (72.85%)
+
+Validation Ended ....................
+
+
+Starting Epoch 17 ......
+
+Training Epoch 17 Average Loss : 0.0484584660263794 Average Accuracy : 98.44632768361582
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_8_30_8_8_0.0001/model.pth.tar-17.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 1.9058, Accuracy: 1093/1493 (73.45%)
+
+Validation Ended ....................
+
+
+Starting Epoch 18 ......
+
+Training Epoch 18 Average Loss : 0.0615321076482426 Average Accuracy : 97.95982423101067
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_8_30_8_8_0.0001/model.pth.tar-18.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 2.0196, Accuracy: 1112/1493 (74.73%)
+
+Validation Ended ....................
+
+
+Starting Epoch 19 ......
+
+Training Epoch 19 Average Loss : 0.04983038263212469 Average Accuracy : 98.35216572504709
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_8_30_8_8_0.0001/model.pth.tar-19.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 1.8758, Accuracy: 1090/1493 (73.25%)
+
+Validation Ended ....................
+
+
+Starting Epoch 20 ......
+
+Training Epoch 20 Average Loss : 0.056336282453815875 Average Accuracy : 98.22661644695543
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_8_30_8_8_0.0001/model.pth.tar-20.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 2.1063, Accuracy: 1075/1493 (72.24%)
+
+Validation Ended ....................
+
+
+Starting Epoch 21 ......
+
+Training Epoch 21 Average Loss : 0.05141533494640993 Average Accuracy : 98.39139987445073
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_8_30_8_8_0.0001/model.pth.tar-21.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 2.2076, Accuracy: 1047/1493 (70.36%)
+
+Validation Ended ....................
+
+
+Starting Epoch 22 ......
+
+Training Epoch 22 Average Loss : 0.04707064221522685 Average Accuracy : 98.40709353421218
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_8_30_8_8_0.0001/model.pth.tar-22.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 2.0977, Accuracy: 1062/1493 (71.37%)
+
+Validation Ended ....................
+
+
+Starting Epoch 23 ......
+
+Training Epoch 23 Average Loss : 0.041968093482081525 Average Accuracy : 98.64249843063402
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_8_30_8_8_0.0001/model.pth.tar-23.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 2.1668, Accuracy: 1098/1493 (73.79%)
+
+Validation Ended ....................
+
+
+Starting Epoch 24 ......
+
+Training Epoch 24 Average Loss : 0.04376929865559414 Average Accuracy : 98.51694915254237
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_8_30_8_8_0.0001/model.pth.tar-24.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 2.2513, Accuracy: 1059/1493 (71.17%)
+
+Validation Ended ....................
+
+
+Starting Epoch 25 ......
+
+Training Epoch 25 Average Loss : 0.05174741536463932 Average Accuracy : 98.33647206528562
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_8_30_8_8_0.0001/model.pth.tar-25.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 2.3284, Accuracy: 1073/1493 (72.11%)
+
+Validation Ended ....................
+
+
+Starting Epoch 26 ......
+
+Training Epoch 26 Average Loss : 0.0410069447208417 Average Accuracy : 98.64249843063402
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_8_30_8_8_0.0001/model.pth.tar-26.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 2.0931, Accuracy: 1060/1493 (71.24%)
+
+Validation Ended ....................
+
+
+Starting Epoch 27 ......
+
+Training Epoch 27 Average Loss : 0.04002365442013062 Average Accuracy : 98.65034526051475
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_8_30_8_8_0.0001/model.pth.tar-27.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 2.4069, Accuracy: 1086/1493 (72.98%)
+
+Validation Ended ....................
+
+
+Starting Epoch 28 ......
+
+Training Epoch 28 Average Loss : 0.05012626524104014 Average Accuracy : 98.33647206528562
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_8_30_8_8_0.0001/model.pth.tar-28.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 2.2652, Accuracy: 1072/1493 (72.04%)
+
+Validation Ended ....................
+
+
+Starting Epoch 29 ......
+
+Training Epoch 29 Average Loss : 0.042578271928956114 Average Accuracy : 98.6346516007533
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_8_30_8_8_0.0001/model.pth.tar-29.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 2.2527, Accuracy: 1069/1493 (71.84%)
+
+Validation Ended ....................
+
+
+Starting Epoch 30 ......
+
+Training Epoch 30 Average Loss : 0.03545686806017812 Average Accuracy : 98.85436283741369
+Saving Checkpoint .......
+Checkpoint saved to "/mnt/fast/nobackup/users/rs01960/AML/Action-Recognition/Logs/2Dresnet18_8_30_8_8_0.0001/model.pth.tar-30.ckpt"
+
+Validation Started ....................
+
+Validation: Average loss: 2.5505, Accuracy: 1081/1493 (72.65%)
+
+Validation Ended ....................
+
+
+Test Started ....................
+
+Test: Average loss: 2.3433, Accuracy: 1208/1735 (69.91%)
+
+Test Ended ....................
+
+=> Show performance summary
+2Dresnet18 (source)
+- epoch 1	 Accuracy 68.82%
+- epoch 2	 Accuracy 69.76%
+- epoch 3	 Accuracy 70.09%
+- epoch 4	 Accuracy 71.64%
+- epoch 5	 Accuracy 71.77%
+- epoch 6	 Accuracy 70.30%
+- epoch 7	 Accuracy 71.98%
+- epoch 8	 Accuracy 72.31%
+- epoch 9	 Accuracy 70.43%
+- epoch 10	 Accuracy 69.56%
+- epoch 11	 Accuracy 70.83%
+- epoch 12	 Accuracy 72.31%
+- epoch 13	 Accuracy 72.31%
+- epoch 14	 Accuracy 73.25%
+- epoch 15	 Accuracy 71.03%
+- epoch 16	 Accuracy 72.85%
+- epoch 17	 Accuracy 73.45%
+- epoch 18	 Accuracy 74.73%
+- epoch 19	 Accuracy 73.25%
+- epoch 20	 Accuracy 72.24%
+- epoch 21	 Accuracy 70.36%
+- epoch 22	 Accuracy 71.37%
+- epoch 23	 Accuracy 73.79%
+- epoch 24	 Accuracy 71.17%
+- epoch 25	 Accuracy 72.11%
+- epoch 26	 Accuracy 71.24%
+- epoch 27	 Accuracy 72.98%
+- epoch 28	 Accuracy 72.04%
+- epoch 29	 Accuracy 71.84%
+- epoch 30	 Accuracy 72.65%
+Runtime : 3:43:30.345604

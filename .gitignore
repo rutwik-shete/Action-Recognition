@@ -5,7 +5,7 @@ HMDB_simp
 dataset
 __pycache__
 KTH_pickle
-Logs
+Logs/*/model.pth.tar-*.ckpt
 wandb
 train.sh
 config.sh
